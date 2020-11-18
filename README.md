@@ -1,8 +1,8 @@
-## 📞Ncell unofficial API wrapper for python
+## 📞Unofficial Python API Wrapper for Ncell
 
-Python API wrapper for Ncell app to call almost all functions of the app. 
+This is the unofficial python API wrapper for Ncell application. With this wrapper, you can call almost all functions of the application.
 
-Note: ```Ncell don't provide any public API. I am not responsible for any things you do using this wrapper.```
+**Note:** Ncell doesn't provide any public API. So, use this unofficial wrapper wisely.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -11,7 +11,7 @@ Note: ```Ncell don't provide any public API. I am not responsible for any things
    - [register](#register)
      - [sendOtp](#sendotp)
      - [getToken](#gettoken)       
-   - [ncell](#the-tiktokuser-class)
+   - [ncell](#ncell)
      - [login](#login)
      - [viewProfile](#viewprofile)
      - [sendSms](#sendsms)
@@ -34,12 +34,12 @@ Note: ```Ncell don't provide any public API. I am not responsible for any things
 - [License](#license)
 
 ## Installation
-- Install via [pip](https://www.pypi.org/projects/ncellapp)
+- Install via [pip](https://www.pypi.org/project/ncellapp).
     ```bash
     pip install ncellapp
     ```
 
-- Install from source
+- Install from the source.
     ```bash
     git clone https://github.com/hemantapkh/ncellapp.git && cd ncellapp && python setup.py install
     ```
@@ -62,16 +62,17 @@ Note: ```Ncell don't provide any public API. I am not responsible for any things
 >>> from ncellapp import ncell
 
 >>> account = ncell(token)
->>> account.login()
+>>> account.login() # Login to the account
 {'opStatus': '0', 'errorMessage': 'SUCCESS'}
 >>> account.sendFreeSms(980799****, 'Hey there!, I am sending you an SMS with Python!')
 {'cacheDataInMins': '0', 'srRefNumber': 'Your message has been sent successfully.', 'currentDate': '17-Nov-2020 05:19 PM', 'opStatus': '0', 'errorMessage': 'SUCCESS', 'identifier': 'SENDSMS'}
 ```
 
 ## Detailed documentation
-For every method calls, it returns the response from the Ncell server in dictionary type.
+**Note:** For every methods calls, it returns the response from the Ncell server in dictionary type.
 
 ### register
+
 ```python
 from ncellapp import register
 
@@ -79,20 +80,24 @@ reg = register('your number')
 ```
 
   ### ``sendOtp``
-  To send OTP message to the phone number for registration
+  To send OTP messages to the phone number for registration.
   ```python
   reg.sendOtp()
   ```
 
   ### ``getToken``
-  To get the token, send the OTP back to the Ncell server
-
-  otp (int): OTP sent in phone number
-  ```python
+  To get the token. Send the OTP back to the Ncell server.
+  
+   ```python
   reg.getToken(otp)
   ```
+  *Args:*<br>
+  otp (int): OTP sent in phone number for registration
+
 ----
+
 ### ncell
+
 ```python
 from ncellapp import ncell
 
@@ -100,134 +105,162 @@ account = ncell('token')
 ```
 
 ### ``login``
-Login using the token before using any methods below
+To login to the account with the token. 
 ```python
 account.login()
 ```
 
+
+After the successful login:<br>
+`account.name`: return the account name<br>
+`account.accountId`: return the accountID<br>
+`account.status`: return the account status<br>
+`account.msidn`: return the account phone number<br>
+`account.serviceFlag`: return the account service flag (prepaid/postpaid)<br>
+`account.currentPlan`: return the account current plan<br>
+`account.secureToken`: return the account secure token<br>
+`account.hubID`: return the account hubID<br>
+`account.partyID`: return the account partyID<br><br>
+
+**Note:** You must login to the account to use the methods below.<br>
+
 ### ``viewProfile``
-View the profile of the account
+To view the profile of the account.
 ```python
 account.viewProfile()
 ```
 
 ### ``sendSms``
-Send SMS to any Ncell numbers using the current data plan
-
-destination (int): MSIDN of the destination<br>
-message (String): Message to send<br>
-schedule (int, optional): Schedule date in order of YYYYMMDDHHMMSS format, eg.20201105124500. Defaults to None.
+To send SMS to any Ncell numbers using the current data plan.
 
 ```python
 account.sendSms(destination, message, schedule)
 ```
 
-### ``sendFreeSms``
-Send free SMS to any Ncell numbers
-
+*Args:*<br>
 destination (int): MSIDN of the destination<br>
 message (String): Message to send<br>
-schedule (int, optional): Schedule date in order of YYYYMMDDHHMMSS format, eg.20201105124500. Defaults to None.
+schedule (int, optional): Schedule a date to send a SMS (Format: YYYYMMDDHHMMSS), eg.20201105124500. Defaults to None.
+
+### ``sendFreeSms``
+To send free SMS to any Ncell numbers.
 
 ```python
 account.sendFreeSms(destination, message, schedule)
 ```
 
+*Args:*<br>
+destination (int): MSIDN of the destination<br>
+message (String): Message to send<br>
+schedule (int, optional): Schedule a date to send a SMS (Format: YYYYMMDDHHMMSS), eg.20201105124500. Defaults to None.
+
 ### ``viewBalance``
-View the current balance of the account
+To view the current balance of the account.
 ```python
 account.viewBalance()
 ```
 
 ### ``selfRecharge``
-Recharge the current account
+To recharge the current account.
 
-rpin (int): 16 digit PIN of the recharge card
 ```python
 account.selfRecharge(rpin)
 ```
+*Args:*<br>rpin (int): 16 digit PIN of the recharge card.
 
 ### ``recharge``
-Send recharge to any Ncell numbers
+To send an instant balance to any Ncell numbers.
 
-rpin (int): 16 digit PIN of the recharge card
 ```python
 account.recharge(destination, rpin)
 ```
+*Args:*<br>
+rpin (int): 16 digit PIN of the recharge card.
 
 ### ``rechargeHistory``
-View the balance transfer history
+To view the balance transfer history.
 ```python
 account.rechargeHistory()
 ```
 
 ### ``balanceTransfer``
-Transfer balance to any Ncell numbers
-
-destination (int): MSIDN of the destination<br>
-amount (int): Amount of balance to transfer
+To transfer an instant  balance to any Ncell numbers.
 
 ```python
 account.balanceTransfer(destination, amount)
 ```
 
-### ``confirmBalanceTransfer``
-Send the OTP to the Ncell and get the login token
+*Args:*<br>
+destination (int): MSIDN of the destination<br>
+amount (int): Amount of balance to transfer
 
-otp (int): OTP sent in phone number
+
+### ``confirmBalanceTransfer``
+To confirm the balance transfer.
+
 ```python
 account.confirmBalanceTransfer(otp)
 ```
 
-### ``viewTransaction``
-View call history
+*Args:*<br>
+otp (int): OTP sent in phone number for confirming the balance transfer
 
-transactionsFrom (int): From date in YYYYMMDDHHMMSS order<br>
-transactionsTo (int): To date in YYYYMMDDHHMMSS order
+### ``viewTransaction``
+To view the call history.
+
 ```python
 account.viewTransaction(transactionsFrom, transactionsTo)
 ```
 
-### ``confirmViewTransaction``
-Confirm the view call history
+*Args:*<br>
+transactionsFrom (int): Date from a certain time period (Format: YYYYMMDDHHMMSS)<br>
+transactionsTo (int): Date to a certain time period (Format: YYYYMMDDHHMMSS)<br>
 
-otp (int): OTP sent in phone number
+### ``confirmViewTransaction``
+To confirm the viewing of the call history.
+
 ```python
 reg.getToken(otp)
 ```
+*Args:*<br>
+otp (int): OTP sent in phone number for viewing the call history
 
 ### ``viewService``
-View the list of available services to activate
+To view the list of available services to activate.
 
-serviceCategory (str, optional): Category of the service. Defaults to None.
 ```python
 account.viewService(serviceCategory)
 ```
+*Args:*<br>
+serviceCategory (str, optional): Category of the service. Defaults to None.
 
 ### ``activateService``
-Activate the certain service
+To activate the certain service.
 
-serviceId (int): Service ID 
 ```python
 account.activateService(serviceId)
 ```
 
+*Args:*<br>
+serviceId (int): Service ID
+
 ### ``viewOffer``
-View the available offer for the account
+To view the available offer for the account.
 ```python
 account.viewOffer()
 ```
 
 ### ``activateOffer``
-Activate the certain offer
+To activate the certain offer.
 
-offerId (int): offer ID found in offerID field of viewOffer()
 ```python
 account.activateOffer(offerId)
 ```
+*Args:*<br>
+offerId (int): offer ID
 
 ### ``view3gPlans``
-View available plans for 3G
+To view available plans for 3G.
 ```python
 account.view3gPlans()
 ```
@@ -246,12 +279,7 @@ Any contributions you make are **greatly appreciated**.
 *You can also contribute to this project by creating an issue of bugs and feature requests.*
 
 ## Contributors
-
-Special thanks to:
-
-* [Sharnab Bogati](https://www.sharnabbogati.com.np) <a  title="Documentation">📖</a> <a  title="Logo">🎨</a>
-
-See also the list of [contributors](https://github.com/hemantapkh/ncellapp/contributors) who participated in this project.
+Thanks to every [contributors](contributors.md) who have contributed in this project.
 
 ## License
 
