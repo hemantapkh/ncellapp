@@ -2,7 +2,7 @@
 
 This is the unofficial python API wrapper for Ncell application. With this wrapper, you can call almost all functions of the application.
 
-**Note:** Ncell doesn't provide any public API. So, use this unofficial wrapper wisely.
+**Note:** This code is in no way affiliated with, authorized, maintained, sponsored or endorsed by Ncell or any of its affiliates or subsidiaries. This is an independent and unofficial API. Use at your own risk.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -279,11 +279,11 @@ Any contributions you make are **greatly appreciated**.
 *You can also contribute to this project by creating an issue of bugs and feature requests.*
 
 ## Contributors
-Thanks to every [contributors](contributors.md) who have contributed in this project.
+Thanks to every [contributors](https://github.com/hemantapkh/ncellapp/blob/main/contributors.md) who have contributed in this project.
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+Distributed under the MIT License. See [LICENSE](https://github.com/hemantapkh/ncellapp/blob/main/LICENSE) for more information.
 
 -----
 Author/Maintainer: [Hemanta Pokharel](https://github.com/hemantapkh/) [[✉️](mailto:hemantapkh@yahoo.com) [💬](https://t.me/hemantapkh) [📺](https://youtube.com/h9techyoutube)]
