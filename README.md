@@ -86,7 +86,7 @@ reg = register('your number')
   ```
 
   ### ``getToken``
-  To get the token. Send the OTP back to the Ncell server.
+  To get the login token.
   
    ```python
   reg.getToken(otp)
