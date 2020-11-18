@@ -220,7 +220,7 @@ transactionsTo (int): Date to a certain time period (Format: YYYYMMDDHHMMSS)<br>
 To confirm the viewing of the call history.
 
 ```python
-reg.getToken(otp)
+account.confirmViewTransaction(otp)
 ```
 *Args:*<br>
 otp (int): OTP sent in phone number for viewing the call history
