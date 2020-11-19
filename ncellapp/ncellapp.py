@@ -99,10 +99,10 @@ class ncell(NcellApp):
             self.msidn = self.deviceClientId = None
             return {'opStatus': 'invalid', 'errorMessage': 'The token you provided is not valid.'}
         
-        self.headers.update = {
+        self.headers.update({
             'X-MobileCare-DeviceClientID': self.deviceClientId,
             'X-MobileCare-MSISDN': self.msidn,          
-        }
+        })
         
         profile = self.viewProfile()
         
