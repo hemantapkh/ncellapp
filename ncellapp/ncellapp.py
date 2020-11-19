@@ -3,7 +3,7 @@ from base64 import (b64encode, b64decode)
 from ast import literal_eval
 from datetime import datetime
 
-from aescipher import AESCipher
+from ncellapp.aescipher import AESCipher
 
 class NcellApp():
     def __init__(self):
