@@ -4,13 +4,11 @@ from ast import literal_eval
 from datetime import datetime
 
 from aescipher import AESCipher
-  
-class register(AESCipher): 
-      
-    def __init__(self, msidn):
-        AESCipher.__init__(self)
-        self.msidn = msidn
-        self.baseUrl = 'http://ssa.ncell.com.np:8080/mc/selfcare/v2/proxy'
+
+class NcellApp():
+    def __init__(self):
+        self.baseUrl = 'http://ssa.ncell.com.np:8080/mc/selfcare/v2/proxy' 
+        self.aes = AESCipher()
         self.headers = {
             'X-MobileCare-AppClientVersion': 'SHn7MOIW3T/R/OL8LsAvxw==',
             'Cache-Control': 'no-cache',
@@ -24,6 +22,12 @@ class register(AESCipher):
             'Host': 'ssa.ncell.com.np:8080',
             'Connection': 'Keep-Alive',
         }
+  
+class register(NcellApp): 
+      
+    def __init__(self, msidn):
+        NcellApp.__init__(self)
+        self.msidn = msidn
     
     def sendOtp(self):
         '''[Send OTP to the number for registration]
@@ -34,14 +38,14 @@ class register(AESCipher):
         url = self.baseUrl + '/register'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><serviceInstance>{self.msidn}</serviceInstance></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
         
-        response = literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        response = literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
         
         try:
-            self.deviceClientId = AESCipher.encrypt(self, response['deviceClientId'])
+            self.deviceClientId = self.aes.encrypt(response['deviceClientId'])
         except KeyError:
             self.deviceClientId = None
         
@@ -64,11 +68,11 @@ class register(AESCipher):
         url = self.baseUrl + '/register'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><otp>{otp}</otp></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
         
-        response = literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        response = literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
         
         if response['opStatus'] == '0':
             token = b64encode(str({'msidn':self.msidn, 'deviceClientId':self.deviceClientId}).encode()).decode()
@@ -76,12 +80,11 @@ class register(AESCipher):
             
         return response
          
-class ncell(AESCipher):
+class ncell(NcellApp):
     
     def __init__(self, token):
-        AESCipher.__init__(self)
+        NcellApp.__init__(self)
         self.token = token
-        self.baseUrl = 'http://ssa.ncell.com.np:8080/mc/selfcare/v2/proxy'
         
     def login(self):
         '''[Extract the msidn and client ID from the token and login]
@@ -96,20 +99,9 @@ class ncell(AESCipher):
             self.msidn = self.deviceClientId = None
             return {'opStatus': 'invalid', 'errorMessage': 'The token you provided is not valid.'}
         
-        self.headers = {
-            'X-MobileCare-AppClientVersion': 'SHn7MOIW3T/R/OL8LsAvxw==',
-            'Cache-Control': 'no-cache',
-            'X-MobileCare-PreferredLocale': 'cAsAM2g0t7oB6OSJKH1ptQ==',
-            'Content-Type': 'application/xml',
-            'X-MobileCare-APIKey': 'ABC_KEY',
-            'X-MobileCare-AppResolution': 'iRRhXh87ipDTZpyEWGWteg==',
+        self.headers.update = {
             'X-MobileCare-DeviceClientID': self.deviceClientId,
-            'X-MobileCare-MSISDN': self.msidn,
-            'X-MobileCare-AppPlatformVersion': 'QJ2ZR3DKpuBfBr7GuTQh7w==',
-            'ACCEPT': 'application/json',
-            'X-MobileCare-AppPlatformName': 'yEHXRN3mrQMvwG4bfE2ApQ==',
-            'Host': 'ssa.ncell.com.np:8080',
-            'Connection': 'Keep-Alive',            
+            'X-MobileCare-MSISDN': self.msidn,          
         }
         
         profile = self.viewProfile()
@@ -138,11 +130,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/viewMyProfile'
 
         data = "<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData /></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
         
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def sendSms(self, destination, message, schedule=None):
         '''[Send SMS with the currentPlan]
@@ -159,11 +151,11 @@ class ncell(AESCipher):
         schedule = schedule or datetime.now().strftime("%Y%m%d%H%M%S")
 
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><userId>{schedule}</userId><problemDesc>{message}</problemDesc><serviceId>SENDSMS</serviceId><accountId>{self.accountId}</accountId><code>{destination}</code><offerId>yes</offerId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
         
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def sendFreeSms(self, destination, message, schedule=None):
         '''[Send free 10 SMS]
@@ -180,11 +172,11 @@ class ncell(AESCipher):
         schedule = schedule or datetime.now().strftime("%Y%m%d%H%M%S")
 
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><userId>{schedule}</userId><problemDesc>{message}</problemDesc><serviceId>SENDSMS</serviceId><accountId>{self.accountId}</accountId><code>{destination}</code><offerId>no</offerId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
         
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
         
     def viewBalance(self):
         '''[View the current balance]
@@ -195,11 +187,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/myBalance'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>{self.accountId}</code><accountId>{self.accountId}</accountId><offerId>{self.hubID}</offerId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def selfRecharge(self, rpin):
         '''[Recharging the current account]
@@ -213,11 +205,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><alternateContactNumber></alternateContactNumber><contractId></contractId><customerId></customerId><serviceId>RECHARGENOW</serviceId><code>{rpin}</code></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def recharge(self, destination, rpin):
         '''[Recharging other's account]
@@ -232,11 +224,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><alternateContactNumber>{destination}</alternateContactNumber><contractId></contractId><customerId></customerId><serviceId>RECHARGENOW</serviceId><code>{rpin}</code></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def rechargeHistory(self):
         '''[latest balance transfer history]
@@ -247,11 +239,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/rechargeHistory'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><userId>TransferHistory</userId><accountId>{self.accountId}</accountId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def balanceTransfer(self, destination, amount):
         '''[Initiate the balance transformation to the destination number]
@@ -266,11 +258,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><alternateContactNumber>{destination}</alternateContactNumber><contractId></contractId><customerId></customerId><action>NEW</action><serviceId>BALANCETRANSFER</serviceId><code>{amount}</code></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def confirmBalanceTransfer(self, otp):
         '''[Confirm the balance transfer]
@@ -284,11 +276,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><password>{otp}</password><contractId></contractId><customerId></customerId><action>NEW</action><serviceId>BALANCETRANSFER</serviceId><offerId>validate</offerId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def viewTransaction(self, transactionsFrom, transactionsTo):
         '''[Initiate to view call history]
@@ -306,11 +298,11 @@ class ncell(AESCipher):
         self.transactionsTo = transactionsTo
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>prepaid</lob><userId>{self.transactionsFrom}</userId><code>GET</code><accountId>{self.accountId}</accountId><offerId>{self.transactionsTo}</offerId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def confirmViewTransaction(self, otp):
         '''[Confirm to view call history]
@@ -324,11 +316,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/viewTransactions'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>prepaid</lob><action>{otp}</action><userId>{self.transactionsFrom}</userId><code>VALIDATE</code><accountId>{self.accountId}</accountId><offerId>{self.transactionsTo}</offerId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def viewService(self, serviceCategory=''):
         '''[View the list of available services to activate]
@@ -342,11 +334,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/viewMyService'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>R3027</code><serviceCategory>{serviceCategory}</serviceCategory><accountId>{self.accountId}</accountId><offerId>{self.hubID}</offerId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def activateService(self, serviceId):
         '''[Activate the certain service]
@@ -360,11 +352,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><serviceId>SUBSCRIBEAPRODUCT</serviceId><code>{serviceId}</code></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def viewOffer(self):
         '''[View the available offer for the account]
@@ -375,11 +367,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/viewOffers'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><customerId></customerId><lob>{self.serviceFlag}</lob><accountId>{self.accountId}</accountId><contractId></contractId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def activateOffer(self, offerId):
         '''[Activate the certain offer]
@@ -393,11 +385,11 @@ class ncell(AESCipher):
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><serviceId>SUBSCRIBEAPRODUCT</serviceId><code>{offerId}</code></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
     
     def view3gPlans(self):
         '''[View available plans for 3G]
@@ -408,8 +400,8 @@ class ncell(AESCipher):
         url = self.baseUrl + '/view3gPlans'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>{self.accountId}</code><accountId>{self.accountId}</accountId><offerId>{self.hubID}</offerId></userOperationData></mAppData>"
-        data = AESCipher.encrypt(self, data)
+        data = self.aes.encrypt(data)
         
         self.request = requests.post(url, headers=self.headers, data=data)
 
-        return literal_eval(AESCipher.decrypt(self, self.request.text))['businessOutput']
+        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
