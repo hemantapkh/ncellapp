@@ -40,12 +40,12 @@ class register(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><serviceInstance>{self.msidn}</serviceInstance></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
         
-        response = literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
         
         try:
-            self.deviceClientId = self.aes.encrypt(response['deviceClientId'])
+            self.deviceClientId = self.aes.encrypt(response.ncellResponse['deviceClientId'])
         except KeyError:
             self.deviceClientId = None
         
@@ -70,13 +70,13 @@ class register(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><otp>{otp}</otp></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
         
-        response = literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
         
-        if response['opStatus'] == '0':
+        if response.ncellResponse['opStatus'] == '0':
             token = b64encode(str({'msidn':self.msidn, 'deviceClientId':self.deviceClientId}).encode()).decode()
-            response.update({'token':token})
+            response.token = token
             
         return response
          
@@ -104,7 +104,7 @@ class ncell(NcellApp):
             'X-MobileCare-MSISDN': self.msidn,          
         })
         
-        profile = self.viewProfile()
+        profile = self.viewProfile().ncellResponse
         
         try:
             self.name = profile['myProfile']['name']
@@ -132,9 +132,11 @@ class ncell(NcellApp):
         data = "<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData /></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
         
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
+        
+        return response
     
     def sendSms(self, destination, message, schedule=None):
         '''[Send SMS with the currentPlan]
@@ -153,9 +155,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><userId>{schedule}</userId><problemDesc>{message}</problemDesc><serviceId>SENDSMS</serviceId><accountId>{self.accountId}</accountId><code>{destination}</code><offerId>yes</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
         
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
+        
+        return response
     
     def sendFreeSms(self, destination, message, schedule=None):
         '''[Send free 10 SMS]
@@ -174,9 +178,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><userId>{schedule}</userId><problemDesc>{message}</problemDesc><serviceId>SENDSMS</serviceId><accountId>{self.accountId}</accountId><code>{destination}</code><offerId>no</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
         
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
+        
+        return response
         
     def viewBalance(self):
         '''[View the current balance]
@@ -189,9 +195,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>{self.accountId}</code><accountId>{self.accountId}</accountId><offerId>{self.hubID}</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def selfRecharge(self, rpin):
         '''[Recharging the current account]
@@ -207,9 +215,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><alternateContactNumber></alternateContactNumber><contractId></contractId><customerId></customerId><serviceId>RECHARGENOW</serviceId><code>{rpin}</code></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def recharge(self, destination, rpin):
         '''[Recharging other's account]
@@ -226,9 +236,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><alternateContactNumber>{destination}</alternateContactNumber><contractId></contractId><customerId></customerId><serviceId>RECHARGENOW</serviceId><code>{rpin}</code></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def rechargeHistory(self):
         '''[latest balance transfer history]
@@ -241,9 +253,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><userId>TransferHistory</userId><accountId>{self.accountId}</accountId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def balanceTransfer(self, destination, amount):
         '''[Initiate the balance transformation to the destination number]
@@ -260,9 +274,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><alternateContactNumber>{destination}</alternateContactNumber><contractId></contractId><customerId></customerId><action>NEW</action><serviceId>BALANCETRANSFER</serviceId><code>{amount}</code></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def confirmBalanceTransfer(self, otp):
         '''[Confirm the balance transfer]
@@ -278,9 +294,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><password>{otp}</password><contractId></contractId><customerId></customerId><action>NEW</action><serviceId>BALANCETRANSFER</serviceId><offerId>validate</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def viewTransaction(self, transactionsFrom, transactionsTo):
         '''[Initiate to view call history]
@@ -300,9 +318,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>prepaid</lob><userId>{self.transactionsFrom}</userId><code>GET</code><accountId>{self.accountId}</accountId><offerId>{self.transactionsTo}</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def confirmViewTransaction(self, otp):
         '''[Confirm to view call history]
@@ -318,9 +338,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>prepaid</lob><action>{otp}</action><userId>{self.transactionsFrom}</userId><code>VALIDATE</code><accountId>{self.accountId}</accountId><offerId>{self.transactionsTo}</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def viewService(self, serviceCategory=''):
         '''[View the list of available services to activate]
@@ -336,9 +358,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>R3027</code><serviceCategory>{serviceCategory}</serviceCategory><accountId>{self.accountId}</accountId><offerId>{self.hubID}</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def activateService(self, serviceId):
         '''[Activate the certain service]
@@ -354,9 +378,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><serviceId>SUBSCRIBEAPRODUCT</serviceId><code>{serviceId}</code></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def viewOffer(self):
         '''[View the available offer for the account]
@@ -369,9 +395,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><customerId></customerId><lob>{self.serviceFlag}</lob><accountId>{self.accountId}</accountId><contractId></contractId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def activateOffer(self, offerId):
         '''[Activate the certain offer]
@@ -387,9 +415,11 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><serviceId>SUBSCRIBEAPRODUCT</serviceId><code>{offerId}</code></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
     
     def view3gPlans(self):
         '''[View available plans for 3G]
@@ -402,6 +432,8 @@ class ncell(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>{self.accountId}</code><accountId>{self.accountId}</accountId><offerId>{self.hubID}</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        self.request = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=self.headers, data=data)
+        
+        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
 
-        return literal_eval(self.aes.decrypt(self.request.text))['businessOutput']
+        return response
