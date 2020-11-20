@@ -1,0 +1,5 @@
+ncellapp.egg-info
+ncellapp/__pycache__
+__pycache__
+.vscode/
+venv/
