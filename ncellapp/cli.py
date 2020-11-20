@@ -173,3 +173,16 @@ def transferBalance(ctx, amount, destination):
         otp = click.prompt('Enter otp received', type=int)
         resp = loggedUser.confirmBalanceTransfer(otp)
         click.echo(f'\n--- {resp["srRefNumber"]} ---\n')
+
+@main.command()
+@click.pass_context
+@click.option('--amount', '-amt', prompt="Enter amount to send", type=int, required=True, help="Amount to send.")
+@click.option('--destination', '-dn', prompt="Enter Destination number", type=int, required=True, help="Destination number.")
+def transferBalance(ctx, amount, destination):
+    """ Get your account balance """
+    loggedUser = checkToken(ctx.obj['token'])
+    if loggedUser:
+        balance = loggedUser.balanceTransfer(destination, amount)
+        otp = click.prompt('Enter otp received', type=int)
+        resp = loggedUser.confirmBalanceTransfer(otp)
+        click.echo(f'\n--- {resp["srRefNumber"]} ---\n')
