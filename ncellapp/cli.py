@@ -109,7 +109,7 @@ def sendPaidSms(ctx, destination, message, schedule):
 @click.option('--message', '-m', prompt="Enter your sms message", type=str, required=True, help="Contents of sms.")
 @click.option('--schedule', '-s', prompt="Enter Schedule of message (Format: YYYYMMDDHHMMSS), eg.20201105124500 or type - for no schedule", type=str, required=False, help="Schedule of message (Format: YYYYMMDDHHMMSS), eg.20201105124500.")
 def sendFreeSms(ctx, destination, message, schedule):
-    ''' Send a paid sms  '''
+    ''' Send a free sms  '''
     loggedUser = checkToken(ctx.obj['token'])
     if loggedUser:
         if len(str(destination)) != 10:
@@ -138,7 +138,7 @@ def getBalance(ctx):
 @click.pass_context
 @click.option('--pin', '-rpin', prompt="Enter Recharge Pin [16 digits]", type=int, required=True, help="Recharge pin.")
 def recharge(ctx, pin):
-    """ Get your account balance """
+    """ Recharge your account """
     loggedUser = checkToken(ctx.obj['token'])
     if loggedUser:
         balance = loggedUser.selfRecharge(pin)
@@ -153,7 +153,7 @@ def recharge(ctx, pin):
 @click.option('--pin', '-rpin', prompt="Enter Recharge Pin [16 digits]", type=int, required=True, help="Recharge pin.")
 @click.option('--destination', '-dn', prompt="Enter Destination number", type=int, required=True, help="Destination number.")
 def rechargeOthers(ctx, pin, destination):
-    """ Get your account balance """
+    """ Recharge others """
     loggedUser = checkToken(ctx.obj['token'])
     if loggedUser:
         balance = loggedUser.recharge(destination, pin)
@@ -166,7 +166,7 @@ def rechargeOthers(ctx, pin, destination):
 @main.command()
 @click.pass_context
 def rechargeHistory(ctx):
-    """ Get your account balance """
+    """ Get your recharge history """
     loggedUser = checkToken(ctx.obj['token'])
     if loggedUser:
         history = loggedUser.rechargeHistory()
@@ -185,7 +185,7 @@ def rechargeHistory(ctx):
 @click.option('--amount', '-amt', prompt="Enter amount to send", type=int, required=True, help="Amount to send.")
 @click.option('--destination', '-dn', prompt="Enter Destination number", type=int, required=True, help="Destination number.")
 def transferBalance(ctx, amount, destination):
-    """ Get your account balance """
+    """ Transfer balance to others """
     loggedUser = checkToken(ctx.obj['token'])
     if loggedUser:
         balance = loggedUser.balanceTransfer(destination, amount)
@@ -194,15 +194,3 @@ def transferBalance(ctx, amount, destination):
         click.echo(f'\n--- {resp["srRefNumber"]} ---\n')
 
 
-@main.command()
-@click.pass_context
-@click.option('--amount', '-amt', prompt="Enter amount to send", type=int, required=True, help="Amount to send.")
-@click.option('--destination', '-dn', prompt="Enter Destination number", type=int, required=True, help="Destination number.")
-def transferBalance(ctx, amount, destination):
-    """ Get your account balance """
-    loggedUser = checkToken(ctx.obj['token'])
-    if loggedUser:
-        balance = loggedUser.balanceTransfer(destination, amount)
-        otp = click.prompt('Enter otp received', type=int)
-        resp = loggedUser.confirmBalanceTransfer(otp)
-        click.echo(f'\n--- {resp["srRefNumber"]} ---\n')
