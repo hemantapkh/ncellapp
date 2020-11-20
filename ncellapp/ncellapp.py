@@ -25,9 +25,9 @@ class NcellApp():
   
 class register(NcellApp): 
       
-    def __init__(self, msidn):
+    def __init__(self, msisdn):
         NcellApp.__init__(self)
-        self.msidn = str(msidn)
+        self.msisdn = str(msisdn)
     
     def sendOtp(self):
         '''[Send OTP to the number for registration]
@@ -37,7 +37,7 @@ class register(NcellApp):
         '''
         url = self.baseUrl + '/register'
         
-        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><serviceInstance>{self.msidn}</serviceInstance></userOperationData></mAppData>"
+        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><serviceInstance>{self.msisdn}</serviceInstance></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
         response = requests.post(url, headers=self.headers, data=data)
@@ -62,7 +62,7 @@ class register(NcellApp):
         '''
         self.headers.update({
             'X-MobileCare-DeviceClientID':  self.deviceClientId,
-            'X-MobileCare-MSISDN': self.msidn,          
+            'X-MobileCare-MSISDN': self.msisdn,          
         })
         
         url = self.baseUrl + '/register'
@@ -75,7 +75,7 @@ class register(NcellApp):
         response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
         
         if response.ncellResponse['opStatus'] == '0':
-            token = b64encode(str({'msidn':self.msidn, 'deviceClientId':self.deviceClientId}).encode()).decode()
+            token = b64encode(str({'msisdn':self.msisdn, 'deviceClientId':self.deviceClientId}).encode()).decode()
             response.token = token
             
         return response
@@ -87,21 +87,21 @@ class ncell(NcellApp):
         self.token = token
         
     def login(self):
-        '''[Extract the msidn and client ID from the token and login]
+        '''[Extract the msisdn and client ID from the token and login]
 
         Returns:
             [dict]: [returns opStatus=0 if successful]
         '''
         try:
-            self.msidn = literal_eval(b64decode(self.token).decode())['msidn']
+            self.msisdn = literal_eval(b64decode(self.token).decode())['msisdn']
             self.deviceClientId = literal_eval(b64decode(self.token).decode())['deviceClientId']
         except Exception:
-            self.msidn = self.deviceClientId = None
+            self.msisdn = self.deviceClientId = None
             return {'opStatus': 'invalid', 'errorMessage': 'The token you provided is not valid.'}
         
         self.headers.update({
             'X-MobileCare-DeviceClientID': self.deviceClientId,
-            'X-MobileCare-MSISDN': self.msidn,          
+            'X-MobileCare-MSISDN': self.msisdn,          
         })
         
         profile = self.viewProfile().ncellResponse
@@ -142,7 +142,7 @@ class ncell(NcellApp):
         '''[Send SMS with the currentPlan]
 
         Args:
-            destination ([int]): [MSIDN of the destination]
+            destination ([int]): [msisdn of the destination]
             message ([String]): [Message to send]
             schedule ([int], optional): [Schedule date in order of YYYYMMDDHHMMSS format, eg.20201105124500]. Defaults to None.
 
@@ -165,7 +165,7 @@ class ncell(NcellApp):
         '''[Send free 10 SMS]
 
         Args:
-            destination ([int]): [MSIDN of the destination]
+            destination ([int]): [msisdn of the destination]
             message ([String]): [Message to send]
             schedule ([int], optional): [Schedule date in order of YYYYMMDDHHMMSS format, eg.20201105124500]. Defaults to None.
 
@@ -225,7 +225,7 @@ class ncell(NcellApp):
         '''[Recharging other's account]
 
         Args:
-            destination ([int]): [MSIDN of the destination]
+            destination ([int]): [msisdn of the destination]
             rpin ([int]): [16 digit PIN of the recharge card]
 
         Returns:
@@ -263,7 +263,7 @@ class ncell(NcellApp):
         '''[Initiate the balance transformation to the destination number]
 
         Args:
-            destination ([int]): [MSIDN of the destination]
+            destination ([int]): [msisdn of the destination]
             amount ([int]): [Amount of balance to transfer]
 
         Returns:
