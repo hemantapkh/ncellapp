@@ -27,7 +27,7 @@ class register(NcellApp):
       
     def __init__(self, msidn):
         NcellApp.__init__(self)
-        self.msidn = msidn
+        self.msidn = str(msidn)
     
     def sendOtp(self):
         '''[Send OTP to the number for registration]
