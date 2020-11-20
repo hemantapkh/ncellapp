@@ -270,9 +270,8 @@ account.view3gPlans()
 
 For those who want to use this feature without coding you can use cli features.After installing the package via pip you will have acess to ncellapp command in your cli.
 
-To get Started type : ```
-  ncellapp --help
-```
+To get Started type : `
+  ncellapp --help`
 
 
 ## Contributing
