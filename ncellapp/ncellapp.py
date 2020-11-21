@@ -28,6 +28,7 @@ class register(NcellApp):
     def __init__(self, msisdn):
         NcellApp.__init__(self)
         self.msisdn = str(msisdn)
+        self.deviceClientId = None
     
     def sendOtp(self):
         '''[Send OTP to the number for registration]
@@ -47,7 +48,7 @@ class register(NcellApp):
         try:
             self.deviceClientId = self.aes.encrypt(response.ncellResponse['deviceClientId'])
         except KeyError:
-            self.deviceClientId = None
+            pass
         
         return response
     
