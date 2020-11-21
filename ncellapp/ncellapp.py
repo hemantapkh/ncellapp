@@ -61,7 +61,8 @@ class register(NcellApp):
         Returns:
             [dict]: [response from the Ncell server with token]
         '''
-        self.headers.update({
+        headers2 = self.headers
+        headers2.update({
             'X-MobileCare-DeviceClientID':  self.deviceClientId,
             'X-MobileCare-MSISDN': self.msisdn,          
         })
@@ -71,7 +72,7 @@ class register(NcellApp):
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><otp>{otp}</otp></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
-        response = requests.post(url, headers=self.headers, data=data)
+        response = requests.post(url, headers=headers2, data=data)
         
         response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
         
