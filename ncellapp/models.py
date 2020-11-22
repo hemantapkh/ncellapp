@@ -3,6 +3,7 @@ from ast import literal_eval
 from ncellapp.aescipher import AESCipher
 
 class NcellResponse(object):
+    #: NcellResponse contains decrypted server response from Ncell and other requests.Response() properties.
     def __init__(self, response, customOp=None, customError=None):
         self.aes = AESCipher()
         self.response = response

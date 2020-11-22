@@ -25,18 +25,15 @@ class NcellApp():
         }
         
 class register(NcellApp): 
-      
+    #: Register class contains the methods for registering the account.
+    #: Every methods returns ncellapp.models.NcellResponse object.
     def __init__(self, msisdn):
         NcellApp.__init__(self)
         self.msisdn = str(msisdn)
         self.deviceClientId = None
     
     def sendOtp(self):
-        '''[Send OTP to the number for registration]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: Request Ncell to send OTP to the number for registration
         url = self.baseUrl + '/register'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><serviceInstance>{self.msisdn}</serviceInstance></userOperationData></mAppData>"
@@ -54,14 +51,7 @@ class register(NcellApp):
         return r
     
     def getToken(self, otp):
-        '''[Send the OTP to the Ncell server and return the token if successful]
-
-        Args:
-            otp ([string]): [OTP sent in the phone number]
-
-        Returns:
-            [dict]: [response from the Ncell server with token]
-        '''
+        #: Send the OTP to the Ncell server for verification and get token as response if correct
         headers2 = self.headers
         headers2.update({
             'X-MobileCare-DeviceClientID':  self.deviceClientId,
@@ -84,18 +74,15 @@ class register(NcellApp):
         return r
          
 class ncell(NcellApp):
-    
+    #: Ncell class contains the methods for using the features of ncell app.
+    #: Every methods returns ncellapp.models.NcellResponse object.  
     def __init__(self, token):
         NcellApp.__init__(self)
         self.token = token
         self.name = self.msisdn = self.status = self.partyID = self.accountId = self.serviceFlag = self.currentPlan = self.secureToken = self.hubID = None
         
     def login(self):
-        '''[Extract the msisdn and client ID from the token and login]
-
-        Returns:
-            [dict]: [returns opStatus=0 if successful]
-        '''
+        #: Extract the msisdn and client ID from the token and view the profile to check the token validity and to extract other important information
         try:
             self.msisdn = literal_eval(b64decode(self.token).decode())['msisdn']
             self.deviceClientId = literal_eval(b64decode(self.token).decode())['deviceClientId']
@@ -129,11 +116,7 @@ class ncell(NcellApp):
             return r
             
     def viewProfile(self):
-        '''[View the profile of the account]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: View the profile of the account
         url = self.baseUrl + '/viewMyProfile'
 
         data = "<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData /></mAppData>"
@@ -146,16 +129,7 @@ class ncell(NcellApp):
         return r
     
     def sendSms(self, destination, message, schedule=None):
-        '''[Send SMS with the currentPlan]
-
-        Args:
-            destination ([int]): [msisdn of the destination]
-            message ([String]): [Message to send]
-            schedule ([int], optional): [Schedule date in order of YYYYMMDDHHMMSS format, eg.20201105124500]. Defaults to None.
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: Send SMS with the currentPlan
         url = self.baseUrl + '/updateServiceRequest'
         schedule = schedule or datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -169,16 +143,7 @@ class ncell(NcellApp):
         return r
     
     def sendFreeSms(self, destination, message, schedule=None):
-        '''[Send free 10 SMS]
-
-        Args:
-            destination ([int]): [msisdn of the destination]
-            message ([String]): [Message to send]
-            schedule ([int], optional): [Schedule date in order of YYYYMMDDHHMMSS format, eg.20201105124500]. Defaults to None.
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: Send SMS with free 10 SMS plan
         url = self.baseUrl + '/updateServiceRequest'
         schedule = schedule or datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -192,11 +157,7 @@ class ncell(NcellApp):
         return r
         
     def viewBalance(self):
-        '''[View the current balance]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: View the current balance of the account
         url = self.baseUrl + '/myBalance'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>{self.accountId}</code><accountId>{self.accountId}</accountId><offerId>{self.hubID}</offerId></userOperationData></mAppData>"
@@ -209,14 +170,7 @@ class ncell(NcellApp):
         return r
     
     def selfRecharge(self, rpin):
-        '''[Recharging the current account]
-
-        Args:
-            rpin ([int]): [16 digit PIN of the recharge card]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: Recharging the current account
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><alternateContactNumber></alternateContactNumber><contractId></contractId><customerId></customerId><serviceId>RECHARGENOW</serviceId><code>{rpin}</code></userOperationData></mAppData>"
@@ -229,15 +183,7 @@ class ncell(NcellApp):
         return r
     
     def recharge(self, destination, rpin):
-        '''[Recharging other's account]
-
-        Args:
-            destination ([int]): [msisdn of the destination]
-            rpin ([int]): [16 digit PIN of the recharge card]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: Recharging other's account
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><alternateContactNumber>{destination}</alternateContactNumber><contractId></contractId><customerId></customerId><serviceId>RECHARGENOW</serviceId><code>{rpin}</code></userOperationData></mAppData>"
@@ -250,11 +196,7 @@ class ncell(NcellApp):
         return r
     
     def rechargeHistory(self):
-        '''[latest balance transfer history]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: View the recharge history of the account
         url = self.baseUrl + '/rechargeHistory'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><userId>TransferHistory</userId><accountId>{self.accountId}</accountId></userOperationData></mAppData>"
@@ -267,15 +209,7 @@ class ncell(NcellApp):
         return r
     
     def balanceTransfer(self, destination, amount):
-        '''[Initiate the balance transformation to the destination number]
-
-        Args:
-            destination ([int]): [msisdn of the destination]
-            amount ([int]): [Amount of balance to transfer]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: Initiate the balance transformation to the destination number
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><alternateContactNumber>{destination}</alternateContactNumber><contractId></contractId><customerId></customerId><action>NEW</action><serviceId>BALANCETRANSFER</serviceId><code>{amount}</code></userOperationData></mAppData>"
@@ -288,14 +222,7 @@ class ncell(NcellApp):
         return r
     
     def confirmBalanceTransfer(self, otp):
-        '''[Confirm the balance transfer]
-
-        Args:
-            otp ([int]): [OTP sent in phone number]
-
-        Returns:
-            [type]: [response from the Ncell server]
-        '''
+        #: Confirm the balance transfer
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><password>{otp}</password><contractId></contractId><customerId></customerId><action>NEW</action><serviceId>BALANCETRANSFER</serviceId><offerId>validate</offerId></userOperationData></mAppData>"
@@ -308,15 +235,7 @@ class ncell(NcellApp):
         return r
     
     def viewTransaction(self, transactionsFrom, transactionsTo):
-        '''[Initiate to view call history]
-
-        Args:
-            transactionsFrom ([int]): [From date in YYYYMMDDHHMMSS order]
-            transactionsTo ([int]): [To date in YYYYMMDDHHMMSS order]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: Initiate to view call history
         url = self.baseUrl + '/viewTransactions'
         
         self.transactionsFrom = transactionsFrom
@@ -332,14 +251,7 @@ class ncell(NcellApp):
         return r
     
     def confirmViewTransaction(self, otp):
-        '''[Confirm to view call history]
-
-        Args:
-            otp ([int]): [OTP sent in phone number]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: Confirm to view call history
         url = self.baseUrl + '/viewTransactions'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>prepaid</lob><action>{otp}</action><userId>{self.transactionsFrom}</userId><code>VALIDATE</code><accountId>{self.accountId}</accountId><offerId>{self.transactionsTo}</offerId></userOperationData></mAppData>"
@@ -352,14 +264,7 @@ class ncell(NcellApp):
         return r
     
     def viewService(self, serviceCategory=''):
-        '''[View the list of available services to activate]
-
-        Args:
-            serviceCategory ([str], optional): [Category of the service]. Defaults to None.
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: View the list of available services to activate. Default service category is All.
         url = self.baseUrl + '/viewMyService'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>R3027</code><serviceCategory>{serviceCategory}</serviceCategory><accountId>{self.accountId}</accountId><offerId>{self.hubID}</offerId></userOperationData></mAppData>"
@@ -372,14 +277,7 @@ class ncell(NcellApp):
         return r
     
     def activateService(self, serviceId):
-        '''[Activate the certain service]
-
-        Args:
-            serviceId ([int]): [Service ID found in isMandatory field of viewService()]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: Activate the certain service. Note: ServiceID is in isMandatory key instead of serviceId of viewService.
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><serviceId>SUBSCRIBEAPRODUCT</serviceId><code>{serviceId}</code></userOperationData></mAppData>"
@@ -392,11 +290,7 @@ class ncell(NcellApp):
         return r
     
     def viewOffer(self):
-        '''[View the available offer for the account]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: View the available offer for the account
         url = self.baseUrl + '/viewOffers'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><customerId></customerId><lob>{self.serviceFlag}</lob><accountId>{self.accountId}</accountId><contractId></contractId></userOperationData></mAppData>"
@@ -409,14 +303,7 @@ class ncell(NcellApp):
         return r
     
     def activateOffer(self, offerId):
-        '''[Activate the certain offer]
-
-        Args:
-            offerId ([int]): [offer ID found in offerID field of viewOffer()]
-
-        Returns:
-            [type]: [description]
-        '''
+        #: Activate the certain offer
         url = self.baseUrl + '/updateServiceRequest'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><serviceId>SUBSCRIBEAPRODUCT</serviceId><code>{offerId}</code></userOperationData></mAppData>"
@@ -429,11 +316,7 @@ class ncell(NcellApp):
         return r
     
     def view3gPlans(self):
-        '''[View available plans for 3G]
-
-        Returns:
-            [dict]: [response from the Ncell server]
-        '''
+        #: View available plans for 3G
         url = self.baseUrl + '/view3gPlans'
         
         data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>{self.accountId}</code><accountId>{self.accountId}</accountId><offerId>{self.hubID}</offerId></userOperationData></mAppData>"

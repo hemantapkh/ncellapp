@@ -10,14 +10,14 @@ class AESCipher(object):
 
     def encrypt(self, raw):
         raw = self._pad(raw)
-        # zero based byte[16]
+        #: zero based byte[16]
         iv = b'\0'*16
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return b64encode(cipher.encrypt(raw.encode())).decode('UTF-8')
 
     def decrypt(self, enc):
         enc = b64decode(enc)
-        # zero based byte[16]
+        #: zero based byte[16]
         iv = b'\0'*16
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return self._unpad(cipher.decrypt(enc)).decode('utf-8')
