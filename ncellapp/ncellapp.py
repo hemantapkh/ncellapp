@@ -48,7 +48,7 @@ class register(NcellApp):
         
         try:
             self.deviceClientId = self.aes.encrypt(r.content['deviceClientId'])
-        except Exception:
+        except KeyError:
             pass
         
         return r
@@ -77,13 +77,10 @@ class register(NcellApp):
         
         r = NcellResponse(response)
         
-        try:
-            if r.content['opStatus'] == '0':
-                token = b64encode(str({'msisdn':self.msisdn, 'deviceClientId':self.deviceClientId}).encode()).decode()
-                r.token = token
-            else:
-                r.token = None
-        except Exception:
+        if r.content['opStatus'] == '0':
+            token = b64encode(str({'msisdn':self.msisdn, 'deviceClientId':self.deviceClientId}).encode()).decode()
+            r.token = token
+        else:
             r.token = None
             
         return r
@@ -129,7 +126,7 @@ class ncell(NcellApp):
             r = NcellResponse(None, customOp='0', customError='SUCCESS')
             return r
             
-        except Exception:      
+        except KeyError:      
             r = NcellResponse(None, customOp='expired', customError='The token you provided has expired.')
             return r
             

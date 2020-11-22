@@ -21,14 +21,14 @@ class NcellResponse(object):
     def cacheDataInMins(self):
         try:
             return self.responseDict['cacheDataInMins']
-        except Exception:
+        except AttributeError:
             pass
     
     @property
     def currentDate(self):
         try:
             return self.responseDict['currentDate']
-        except Exception:
+        except AttributeError:
             pass
     
     @property
@@ -38,7 +38,7 @@ class NcellResponse(object):
                 return self.customOp
             else:
                 return self.responseDict['opStatus']
-        except Exception:
+        except AttributeError:
             pass
 
     @property
@@ -48,7 +48,7 @@ class NcellResponse(object):
                 return self.customError
             else:
                 return self.responseDict['errorMessage']
-        except Exception:
+        except AttributeError:
             pass
         
     @property
@@ -110,4 +110,3 @@ class NcellResponse(object):
             return self.response.url
         except AttributeError:
             pass
-    
