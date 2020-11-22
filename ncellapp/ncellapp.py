@@ -79,10 +79,8 @@ class register(NcellApp):
         
         if r.content['opStatus'] == '0':
             token = b64encode(str({'msisdn':self.msisdn, 'deviceClientId':self.deviceClientId}).encode()).decode()
-            r.token = token
-        else:
-            r.token = None
-            
+            r.content['token'] = token
+          
         return r
          
 class ncell(NcellApp):
