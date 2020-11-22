@@ -4,6 +4,7 @@ from ast import literal_eval
 from datetime import datetime
 
 from ncellapp.aescipher import AESCipher
+from ncellapp.models import NcellResponse
 
 class NcellApp():
     def __init__(self):
@@ -22,7 +23,7 @@ class NcellApp():
             'Host': 'ssa.ncell.com.np:8080',
             'Connection': 'Keep-Alive',
         }
-  
+        
 class register(NcellApp): 
       
     def __init__(self, msisdn):
@@ -43,14 +44,14 @@ class register(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
+        r = NcellResponse(response)
         
         try:
-            self.deviceClientId = self.aes.encrypt(response.ncellResponse['deviceClientId'])
-        except KeyError:
+            self.deviceClientId = self.aes.encrypt(r.content['deviceClientId'])
+        except Exception:
             pass
         
-        return response
+        return r
     
     def getToken(self, otp):
         '''[Send the OTP to the Ncell server and return the token if successful]
@@ -74,19 +75,25 @@ class register(NcellApp):
         
         response = requests.post(url, headers=headers2, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
+        r = NcellResponse(response)
         
-        if response.ncellResponse['opStatus'] == '0':
-            token = b64encode(str({'msisdn':self.msisdn, 'deviceClientId':self.deviceClientId}).encode()).decode()
-            response.token = token
+        try:
+            if r.content['opStatus'] == '0':
+                token = b64encode(str({'msisdn':self.msisdn, 'deviceClientId':self.deviceClientId}).encode()).decode()
+                r.token = token
+            else:
+                r.token = None
+        except Exception:
+            r.token = None
             
-        return response
+        return r
          
 class ncell(NcellApp):
     
     def __init__(self, token):
         NcellApp.__init__(self)
         self.token = token
+        self.name = self.msisdn = self.status = self.partyID = self.accountId = self.serviceFlag = self.currentPlan = self.secureToken = self.hubID = None
         
     def login(self):
         '''[Extract the msisdn and client ID from the token and login]
@@ -98,18 +105,19 @@ class ncell(NcellApp):
             self.msisdn = literal_eval(b64decode(self.token).decode())['msisdn']
             self.deviceClientId = literal_eval(b64decode(self.token).decode())['deviceClientId']
         except Exception:
-            self.msisdn = self.deviceClientId = None
-            return {'opStatus': 'invalid', 'errorMessage': 'The token you provided is not valid.'}
+            r = NcellResponse(None, customOp='invalid', customError='The token you provided is invalid.')
+            return r
         
         self.headers.update({
             'X-MobileCare-DeviceClientID': self.deviceClientId,
             'X-MobileCare-MSISDN': self.msisdn,          
         })
         
-        profile = self.viewProfile().ncellResponse
+        profile = self.viewProfile().content
         
         try:
             self.name = profile['myProfile']['name']
+            self.msisdn = profile['myProfile']['MSISDN']
             self.status = profile['myProfile']['status']
             self.partyID = profile['myProfile']['partyID']
             self.accountId = profile['myProfile']['accountID']
@@ -117,11 +125,13 @@ class ncell(NcellApp):
             self.currentPlan = profile['myProfile']['currentPlan']
             self.secureToken = profile['myProfile']['secureToken']
             self.hubID = profile['myProfile']['hubID']
-            return {'opStatus': '0', 'errorMessage': 'SUCCESS'}
             
-        except KeyError:
-            self.name = self.status = self.partyID = self.accountId = self.serviceFlag = self.currentPlan = self.secureToken = self.hubID = None
-            return {'opStatus': 'expired', 'errorMessage': 'The token you provided has expired.'}
+            r = NcellResponse(None, customOp='0', customError='SUCCESS')
+            return r
+            
+        except Exception:      
+            r = NcellResponse(None, customOp='expired', customError='The token you provided has expired.')
+            return r
             
     def viewProfile(self):
         '''[View the profile of the account]
@@ -136,9 +146,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
+        r = NcellResponse(response)
         
-        return response
+        return r
     
     def sendSms(self, destination, message, schedule=None):
         '''[Send SMS with the currentPlan]
@@ -159,9 +169,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
+        r = NcellResponse(response)
         
-        return response
+        return r
     
     def sendFreeSms(self, destination, message, schedule=None):
         '''[Send free 10 SMS]
@@ -182,9 +192,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
+        r = NcellResponse(response)
         
-        return response
+        return r
         
     def viewBalance(self):
         '''[View the current balance]
@@ -199,9 +209,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def selfRecharge(self, rpin):
         '''[Recharging the current account]
@@ -219,9 +229,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def recharge(self, destination, rpin):
         '''[Recharging other's account]
@@ -240,9 +250,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def rechargeHistory(self):
         '''[latest balance transfer history]
@@ -257,9 +267,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def balanceTransfer(self, destination, amount):
         '''[Initiate the balance transformation to the destination number]
@@ -278,9 +288,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def confirmBalanceTransfer(self, otp):
         '''[Confirm the balance transfer]
@@ -298,9 +308,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def viewTransaction(self, transactionsFrom, transactionsTo):
         '''[Initiate to view call history]
@@ -322,9 +332,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def confirmViewTransaction(self, otp):
         '''[Confirm to view call history]
@@ -342,9 +352,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def viewService(self, serviceCategory=''):
         '''[View the list of available services to activate]
@@ -362,9 +372,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def activateService(self, serviceId):
         '''[Activate the certain service]
@@ -382,9 +392,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def viewOffer(self):
         '''[View the available offer for the account]
@@ -399,9 +409,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def activateOffer(self, offerId):
         '''[Activate the certain offer]
@@ -419,9 +429,9 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
     
     def view3gPlans(self):
         '''[View available plans for 3G]
@@ -436,6 +446,6 @@ class ncell(NcellApp):
         
         response = requests.post(url, headers=self.headers, data=data)
         
-        response.ncellResponse = literal_eval(self.aes.decrypt(response.text))['businessOutput']
-
-        return response
+        r = NcellResponse(response)
+        
+        return r
