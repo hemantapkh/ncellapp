@@ -54,11 +54,14 @@ class NcellResponse(object):
         
     @property
     def content(self):
-        responseDict2 = self.responseDict.copy()
-        toRemove = ['cacheDataInMins','currentDate','opStatus','errorMessage']
-        for i in toRemove:
-            responseDict2.pop(i, None)
-        return responseDict2
+        try:
+            responseDict2 = self.responseDict.copy()
+            toRemove = ['cacheDataInMins','currentDate','opStatus','errorMessage']
+            for i in toRemove:
+                responseDict2.pop(i, None)
+            return responseDict2
+        except AttributeError:
+            pass
     
     @property
     def cookies(self):
