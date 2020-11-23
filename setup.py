@@ -11,7 +11,7 @@ setuptools.setup(
     description="Unofficial Python API Wrapper for Ncell",
     long_description=readme,
     long_description_content_type="text/markdown",
-    install_requires=["crypto"],
+    install_requires=["requests","pycryptodome"],
     url="https://github.com/hemantapkh/ncellapp",
     project_urls={
         "Issue tracker": "https://github.com/hemantapkh/ncellapp/issues",
