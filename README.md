@@ -8,13 +8,13 @@ This is the unofficial python API wrapper of Ncell App. With this wrapper, you c
 - [Installation](#installation)
 - [Start Guide](#start-guide)
    - [Quick Examples](#quick-examples)    
-     - [Getting a Token](#1.-Getting-a-Token)
-     - [Viewing the balance](#2.-viewing-the-balance)
-     - [Sending a free SMS](#3.-sending-a-free-sms)
+     - [Getting a Token](#1-getting-a-token)
+     - [Viewing the balance](#2-viewing-the-balance)
+     - [Sending a free SMS](#3-sending-a-free-sms)
 - [Detailed Documentation](#detailed-documentation)
    - [register](#register)      
    - [ncell](#ncell)
-   - [NcellResponse](#ncellapp.NcellResponse-object)
+   - [NcellResponse](#ncellappncellresponse-object)
 - [Contributing](#contributing)
 - [Contributors](#contributors)
 - [License](#license)
@@ -88,7 +88,8 @@ Available methods for register class:
 ----------|-------------|-----------
 sendOtp()  | Send OTP messages to the phone number for registration | self 
 getToken(otp)     | Send the OTP to the Ncell server to get the token | self,<br>otp : `OTP sent in phone number for registration` 
-**Return value:** A [ncellapp.NcellResponse](#ncellapp.NcellResponse-object) object
+
+**Return value:** A [ncellapp.NcellResponse](#ncellappncellresponse-object) object
 
 ### ncell
 This class contains the methods for using the features of ncell app.
@@ -118,7 +119,7 @@ viewOffer() | View the available offer for the account | self
 activateOffer(offerId) | Activate the certain offer | self,<br>offerId : `offer ID`
 view3gPlans() | view available plans for 3G | self
 
-**Return value:** A [ncellapp.NcellResponse](#ncellapp.NcellResponse-object) object
+**Return value:** A [ncellapp.NcellResponse](#ncellappncellresponse-object) object
 
 ### ncellapp.NcellResponse Object
 The ncellapp.NcellResponse() Object contains the server's response to the HTTP request.
