@@ -20,15 +20,16 @@ This is the unofficial python API wrapper of Ncell App. With this wrapper, you c
 - [License](#license)
 
 ## Installation
-- Install via [pip](https://www.pypi.org/project/ncellapp).
+- Install via [PyPi](https://www.pypi.org/project/ncellapp)
     ```bash
     pip install ncellapp
     ```
 
-- Install from the source.
+- Install from the source
     ```bash
-    git clone https://github.com/hemantapkh/ncellapp.git && cd ncellapp && python setup.py install
+    git clone https://github.com/hemantapkh/ncellapp && cd ncellapp && python setup.py sdist && pip install dist/*
     ```
+**Note:** You may need to change the `pip` to `pip3` or `python` to `python3` on the above command depending on your system.
 
 ## Start guide
 
