@@ -12,8 +12,10 @@ class NcellResponse(object):
         
         try:
             self.responseDict = literal_eval(self.aes.decrypt(self.response.text))['businessOutput']
+            self.responseDict2 = self.responseDict.copy()
         except AttributeError:
             self.responseDict = None
+            self.responseDict2 = None
                        
     def __repr__(self):
         return f'<OperationStatus [{self.opStatus}]>'
@@ -40,7 +42,7 @@ class NcellResponse(object):
             else:
                 return self.responseDict['opStatus']
         except AttributeError:
-            pass
+            return None
 
     @property
     def errorMessage(self):
@@ -55,11 +57,10 @@ class NcellResponse(object):
     @property
     def content(self):
         try:
-            responseDict2 = self.responseDict.copy()
             toRemove = ['cacheDataInMins','currentDate','opStatus','errorMessage']
             for i in toRemove:
-                responseDict2.pop(i, None)
-            return responseDict2
+                self.responseDict2.pop(i, None)
+            return self.responseDict2
         except AttributeError:
             pass
     
