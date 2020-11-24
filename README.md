@@ -27,10 +27,10 @@
 <img src="https://img.shields.io/github/contributors/hemantapkh/ncellapp.svg" alt="Contributors" />
 </a>
 
-
+<p align="center">
 This is the unofficial python API wrapper of Ncell App. With this wrapper, you can call almost all functions of the application.
-
-**Note:** This code is in no way affiliated with, authorized, maintained, sponsored or endorsed by Ncell or any of its affiliates or subsidiaries. This is an independent and unofficial API. Use at your own risk.
+<p align="center">
+<b>Note:</b> This project is in no way affiliated with, authorized, maintained, sponsored or endorsed by Ncell or any of its affiliates or subsidiaries. This is an independent and unofficial API. Use at your own risk.
 
 ## Table of Contents
 - [Installation](#installation)
