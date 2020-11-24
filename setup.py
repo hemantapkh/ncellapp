@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ncellapp", 
-    version="0.1.2",
+    version="1.0.0",
     author="Hemanta Pokharel",
     author_email="hemantapkh@yahoo.com",
     description="Unofficial Python API Wrapper for Ncell",
