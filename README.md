@@ -181,10 +181,8 @@ Any contributions you make are **greatly appreciated**.
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-*You can also contribute to this project by creating an issue of bugs and feature requests.*
 
-## Contributors
-Thanks to every [contributors](https://github.com/hemantapkh/ncellapp/blob/main/contributors.md) who have contributed in this project.
+*Thanks to every [contributors](https://github.com/hemantapkh/ncellapp/graphs/contributors) who have contributed in this project.*
 
 ## License
 
