@@ -1,4 +1,32 @@
-## 📞Unofficial Python API Wrapper of Ncell
+
+<h2 align='center'>📞Unofficial Python API Wrapper of Ncell</h2>
+<p align="center">
+<img src="images/ncellpy.jpg" align="center" height=200 alt="NcellPy" />
+</p>
+<p align="center">
+<a href="https://pypi.org/ncellapp">
+<img src='https://img.shields.io/pypi/v/ncellapp.svg'>
+</a>
+<a>
+<img src="https://img.shields.io/badge/platform-cross-blue">
+</a>
+<a href="https://pypi.org/ncellapp">
+<img src='https://img.shields.io/pypi/pyversions/ncellapp.svg'>
+</a>
+<a href="https://pypi.org/ncellapp">
+<img src='https://pepy.tech/badge/ncellapp'>
+</a>
+<img src='https://visitor-badge.laobi.icu/badge?page_id=hemantapkh.ncellapp'>
+<a href="https://github.com/hemantapkh/ncellapp/stargazers">
+<img src="https://img.shields.io/github/stars/hemantapkh/ncellapp" alt="Stars"/>
+</a>
+<a href="https://github.com/hemantapkh/ncellapp/issues">
+<img src="https://img.shields.io/github/issues/hemantapkh/ncellapp" alt="Issues"/>
+</a>
+<a href="https://github.com/hemantapkh/ncellapp/graphs/contributors">
+<img src="https://img.shields.io/github/contributors/hemantapkh/ncellapp.svg" alt="Contributors" />
+</a>
+
 
 This is the unofficial python API wrapper of Ncell App. With this wrapper, you can call almost all functions of the application.
 
