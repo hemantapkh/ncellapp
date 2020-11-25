@@ -1,11 +1,11 @@
 import setuptools
 
-with open("README.md", "r") as fh:
+with open("PyPiREADME.md", "r") as fh:
     readme = fh.read()
 
 setuptools.setup(
     name="ncellapp", 
-    version="1.0.0",
+    version="1.0.1",
     author="Hemanta Pokharel",
     author_email="hemantapkh@yahoo.com",
     description="Unofficial Python API Wrapper of Ncell",
