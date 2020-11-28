@@ -18,7 +18,7 @@ This is the unofficial python API wrapper of Ncell App. With this wrapper, you c
 
 ## Documentation
 
-See the documentation and examples [here](https://github.com/hemantapkh/blob/main/readme.md).
+See the documentation and examples [here](https://github.com/hemantapkh/ncellapp/blob/main/README.md).
 
 ## License
 
