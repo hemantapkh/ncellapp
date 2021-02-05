@@ -76,10 +76,16 @@ class register(NcellApp):
 class ncell(NcellApp):
     #: Ncell class contains the methods for using the features of ncell app.
     #: Every methods returns ncellapp.models.NcellResponse object.  
-    def __init__(self, token):
+    def __init__(self, token=None, msisdn=None, deviceClientId=None):
         NcellApp.__init__(self)
         self.token = token
         self.name = self.msisdn = self.status = self.partyID = self.accountId = self.serviceFlag = self.currentPlan = self.secureToken = self.hubID = None
+
+        if msisdn and deviceClientId:
+            self.headers.update({
+            'X-MobileCare-DeviceClientID': deviceClientId,
+            'X-MobileCare-MSISDN': str(msisdn),          
+            })
         
     def login(self):
         #: Extract the msisdn and client ID from the token and view the profile to check the token validity and to extract other important information
@@ -147,7 +153,7 @@ class ncell(NcellApp):
         url = self.baseUrl + '/updateServiceRequest'
         schedule = schedule or datetime.now().strftime("%Y%m%d%H%M%S")
 
-        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{serviceFlag or self.serviceFlag}</lob><userId>{schedule}</userId><problemDesc>{message}</problemDesc><serviceId>SENDSMS</serviceId><accountId>{accountID or self.accountId}</accountId><code>{destination}</code><offerId>no</offerId></userOperationData></mAppData>"
+        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{serviceFlag or self.serviceFlag}</lob><userId>{schedule}</userId><problemDesc>{message}</problemDesc><serviceId>SENDSMS</serviceId><accountId>{accountId or self.accountId}</accountId><code>{destination}</code><offerId>no</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
         response = requests.post(url, headers=self.headers, data=data)
@@ -160,7 +166,8 @@ class ncell(NcellApp):
         #: View the current balance of the account
         url = self.baseUrl + '/myBalance'
         
-        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{serviceFlag or self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>{accountID or self.accountId}</code><accountId>{accountID or self.accountId}</accountId><offerId>{hubID or self.hubID}</offerId></userOperationData></mAppData>"
+        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{serviceFlag or self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>{accountId or self.accountId}</code><accountId>{accountId or self.accountId}</accountId><offerId>{hubID or self.hubID}</offerId></userOperationData></mAppData>"
+        self.data = data
         data = self.aes.encrypt(data)
         
         response = requests.post(url, headers=self.headers, data=data)
@@ -241,7 +248,7 @@ class ncell(NcellApp):
         self.transactionsFrom = transactionsFrom
         self.transactionsTo = transactionsTo
         
-        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>prepaid</lob><userId>{self.transactionsFrom}</userId><code>GET</code><accountId>{accountID or self.accountId}</accountId><offerId>{self.transactionsTo}</offerId></userOperationData></mAppData>"
+        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>prepaid</lob><userId>{self.transactionsFrom}</userId><code>GET</code><accountId>{accountId or self.accountId}</accountId><offerId>{self.transactionsTo}</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
         response = requests.post(url, headers=self.headers, data=data)
@@ -250,11 +257,11 @@ class ncell(NcellApp):
         
         return r
     
-    def confirmViewTransaction(self, otp, accountID=None):
+    def confirmViewTransaction(self, otp, accountId=None):
         #: Confirm to view call history
         url = self.baseUrl + '/viewTransactions'
         
-        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>prepaid</lob><action>{otp}</action><userId>{self.transactionsFrom}</userId><code>VALIDATE</code><accountId>{accountID or self.accountId}</accountId><offerId>{self.transactionsTo}</offerId></userOperationData></mAppData>"
+        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>prepaid</lob><action>{otp}</action><userId>{self.transactionsFrom}</userId><code>VALIDATE</code><accountId>{accountId or self.accountId}</accountId><offerId>{self.transactionsTo}</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
         response = requests.post(url, headers=self.headers, data=data)
@@ -263,11 +270,11 @@ class ncell(NcellApp):
         
         return r
     
-    def viewService(self, serviceCategory='', serviceFlag=None, accountID=None, hubID=None):
+    def viewService(self, serviceCategory='', serviceFlag=None, accountId=None, hubID=None):
         #: View the list of available services to activate. Default service category is All.
         url = self.baseUrl + '/viewMyService'
         
-        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{serviceFlag or self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>R3027</code><serviceCategory>{serviceCategory}</serviceCategory><accountId>{accountID or self.accountId}</accountId><offerId>{hubID or self.hubID}</offerId></userOperationData></mAppData>"
+        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><lob>{serviceFlag or self.serviceFlag}</lob><contractId></contractId><customerId></customerId><code>R3027</code><serviceCategory>{serviceCategory}</serviceCategory><accountId>{accountId or self.accountId}</accountId><offerId>{hubID or self.hubID}</offerId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
         response = requests.post(url, headers=self.headers, data=data)
@@ -289,11 +296,11 @@ class ncell(NcellApp):
         
         return r
     
-    def viewOffer(self, serviceFlag=None, accountID=None):
+    def viewOffer(self, serviceFlag=None, accountId=None):
         #: View the available offer for the account
         url = self.baseUrl + '/viewOffers'
         
-        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><customerId></customerId><lob>{serviceFlag or self.serviceFlag}</lob><accountId>{accountID or self.accountId}</accountId><contractId></contractId></userOperationData></mAppData>"
+        data = f"<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><mAppData><userOperationData><customerId></customerId><lob>{serviceFlag or self.serviceFlag}</lob><accountId>{accountId or self.accountId}</accountId><contractId></contractId></userOperationData></mAppData>"
         data = self.aes.encrypt(data)
         
         response = requests.post(url, headers=self.headers, data=data)
@@ -315,7 +322,7 @@ class ncell(NcellApp):
         
         return r
     
-    def view3gPlans(self, serviceFlag=None, accountID=None, hubID=None):
+    def view3gPlans(self, serviceFlag=None, accountId=None, hubID=None):
         #: View available plans for 3G
         url = self.baseUrl + '/view3gPlans'
         
