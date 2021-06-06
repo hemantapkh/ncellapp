@@ -1,121 +1,51 @@
 from ast import literal_eval
 
-from ncellapp.aescipher import AESCipher
-
 class NcellResponse(object):
-    #: NcellResponse contains decrypted server response from Ncell and other requests.Response() properties.
-    def __init__(self, response, customOp=None, customError=None):
-        self.aes = AESCipher()
-        self.response = response
-        self.customOp = customOp
-        self.customError = customError
-        
-        try:
-            self.responseDict = literal_eval(self.aes.decrypt(self.response.text))['businessOutput']
-            self.responseDict2 = self.responseDict.copy()
-        except AttributeError:
-            self.responseDict = None
-            self.responseDict2 = None
+    def __init__(self, response):
+        self.__response = response
+        self.__responseDict = self.__response.json()
+        self.__responseDict2 = self.__responseDict.copy()
                        
     def __repr__(self):
-        return f'<OperationStatus [{self.opStatus}]>'
+        return f"<Response [{self.responseHeader['responseDescDisplay']}]>"
     
     @property
-    def cacheDataInMins(self):
-        try:
-            return self.responseDict['cacheDataInMins']
-        except AttributeError:
-            pass
-    
-    @property
-    def currentDate(self):
-        try:
-            return self.responseDict['currentDate']
-        except AttributeError:
-            pass
-    
-    @property
-    def opStatus(self):
-        try:
-            if self.customOp:
-                return self.customOp
-            else:
-                return self.responseDict['opStatus']
-        except AttributeError:
-            return None
+    def responseHeader(self):
+        return self.__responseDict['responseHeader']
 
     @property
-    def errorMessage(self):
-        try:
-            if self.customError:
-                return self.customError
-            else:
-                return self.responseDict['errorMessage']
-        except AttributeError:
-            pass
-        
-    @property
     def content(self):
-        try:
-            toRemove = ['cacheDataInMins','currentDate','opStatus','errorMessage']
-            for i in toRemove:
-                self.responseDict2.pop(i, None)
-            return self.responseDict2
-        except AttributeError:
-            pass
+        self.__responseDict2.pop('responseHeader', None)
+        return self.__responseDict2
     
     @property
     def cookies(self):
-        try:
-            return self.response.cookies
-        except AttributeError:
-            pass
+        return self.__response.cookies
     
     @property
     def elapsed(self):
-        try:
-            return self.response.elapsed
-        except AttributeError:
-            pass
+        return self.__response.elapsed
     
     @property
     def headers(self):
-        try:
-            return self.response.headers
-        except AttributeError:
-            pass
+        return self.__response.headers
     
     @property
     def ok(self):
-        try:
-            return self.response.ok
-        except AttributeError:
-            pass
+        return self.__response.ok
     
     @property
     def reason(self):
-        try:
-            return self.response.reason
-        except AttributeError:
-            pass
+        return self.__response.reason
     
     @property
     def request(self):
-        try:
-            return self.response.request
-        except AttributeError:
-            pass
+        return self.__response.request
     
     @property
     def statusCode(self):
-        try:
-            return self.response.status_code
-        except AttributeError:
-            pass
+        return self.__response.status_code
     
     @property
     def url(self):
-        try:
-            return self.response.url
-        except AttributeError:
-            pass
+        return self.__response.url
