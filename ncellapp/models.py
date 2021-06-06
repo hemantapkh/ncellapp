@@ -1,5 +1,3 @@
-from ast import literal_eval
-
 class NcellResponse(object):
     def __init__(self, response):
         self.__response = response
