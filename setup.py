@@ -11,7 +11,7 @@ setuptools.setup(
     description="Unofficial Python API Wrapper of Ncell",
     long_description=readme,
     long_description_content_type="text/markdown",
-    install_requires=["requests"],
+    install_requires=["requests", "emoji"],
     url="https://github.com/hemantapkh/ncellapp",
     project_urls={
         "Documentation": "https://github.com/hemantapkh/ncellapp/blob/main/README.md",
