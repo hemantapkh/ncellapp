@@ -5,7 +5,7 @@ with open("PyPiREADME.md", "r") as fh:
 
 setuptools.setup(
     name="ncellapp", 
-    version="1.0.1",
+    version="2.0.0",
     author="Hemanta Pokharel",
     author_email="hemantapkh@yahoo.com",
     description="Unofficial Python API Wrapper of Ncell",
