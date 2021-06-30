@@ -518,7 +518,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/billingmgt/product/subscribe'
-        data = f'{{"productSubscriptionSummaryRequest":{{"deviceId":"{self.deviceId}","msisdn":"{self.msisdn}","subscriptionCode":"{subscriptionCode}","productName":"Monthly voice pack 720min","productPrice":"306.46","ncellProductName":"Monthly voice pack 720min","medium":"APP","linkId":"00000000000000000"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SUBSCRIBE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"productSubscriptionSummaryRequest":{{"deviceId":"{self.deviceId}","msisdn":"{self.msisdn}","subscriptionCode":"{subscriptionCode}","productName":"N/A","productPrice":"N/A","ncellProductName":"N/A","medium":"APP","linkId":"00000000000000000"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SUBSCRIBE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -535,7 +535,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/billingmgt/product/unsubscribe'
-        data = f'{{"productSubscriptionSummaryRequest":{{"deviceId":"{self.deviceId}","msisdn":"{self.msisdn}","subscriptionCode":"{subscriptionCode}","productName":"Free Missed Call Notification Service","languageCode":"{self.languageCode}","medium":"APP","linkId":"00000000000000000"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SUBSCRIBE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"productSubscriptionSummaryRequest":{{"deviceId":"{self.deviceId}","msisdn":"{self.msisdn}","subscriptionCode":"{subscriptionCode}","productName":"N/A","languageCode":"{self.languageCode}","medium":"APP","linkId":"00000000000000000"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SUBSCRIBE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -549,7 +549,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/otp/generate'
-        data = f'{{"generateOTPRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"android","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"wifi","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"generateOTPRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -572,29 +572,47 @@ class ncell(NcellApp):
 
         return self.__autoRefresh(response, url, data) if self.autoRefresh else NcellResponse(response)
 
-    def transactionHistory(self):
+    def transactionHistory(self, from, to):
         """Get the transaction history
+
+        Args:
+            from (string): Date from when history is to be returned 
+            to (string): Date upto which history is to be returned
+
+        Rules:
+            - The difference between from and to date can only be 7 days
+            - Date should be in the following format: YY-MM-DDT00:00:00 
+                    Eg: 2021-02-06T00:00:00 or 2021-02-12T07:38:09
 
         Returns:
             [ncellapp.models.NcellResponse]: Response from the Ncell server
         """
 
         url = self.baseUrl + '/accountmgt/transaction/history/detail'
-        data = f'{{"transactionDetailRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","dateRange":{{"from":"2021-02-06T00:00:00.000Z","to":"2021-02-12T07:38:09.000Z"}},"pagination":{{"range":100,"start":1,"pageOffSet":1,"totalRecords":0,"originalTotalRecords":0}},"transactionType":"USAGE","timeZone":"America/New_York"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"transactionDetailRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","dateRange":{{"from":"{from}.000Z","to":"{to}.000Z"}},"pagination":{{"range":100,"start":1,"pageOffSet":1,"totalRecords":0,"originalTotalRecords":0}},"transactionType":"USAGE","timeZone":"America/New_York"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
         return self.__autoRefresh(response, url, data) if self.autoRefresh else NcellResponse(response)
 
-    def transactionSummary(self):
+    def transactionSummary(self, from, to):
         """Get the transaction summary
+
+        Args:
+            from (string): Date from when summary is to be returned 
+            to (string): Date upto which summary is to be returned
+
+        Rules:
+            - The difference between from and to date can only be 7 days
+            - Date should be in the following format: YY-MM-DDT00:00:00 
+                    Eg: 2021-02-06T00:00:00 or 2021-02-12T07:38:09
 
         Returns:
             [ncellapp.models.NcellResponse]: Response from the Ncell server
         """
 
         url = self.baseUrl + '/accountmgt/transaction/history/summary'
-        data = f'{{"transactionSummaryRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","dateRange":{{"from":"2021-02-06T00:00:00.000Z","to":"2021-02-12T07:38:09.000Z"}},"transactionType":"USAGE","timeZone":"America/New_York","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"transactionSummaryRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","dateRange":{{"from":"{from}.000Z","to":"{to}.000Z"}},"transactionType":"USAGE","timeZone":"America/New_York","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
