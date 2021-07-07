@@ -1,2 +1,2 @@
-from ncellapp.ncellapp import register
-from ncellapp.ncellapp import ncell
+from ncellapp.register import register
+from ncellapp.ncell import ncell
