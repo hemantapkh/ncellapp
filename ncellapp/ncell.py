@@ -11,14 +11,6 @@ from ncellapp.signatures import tsGen, reqIdGen, tranIdGen
 class ncell(NcellApp):
     #: Ncell class contains the methods for using the features of ncell app  
     def __init__(self, token, autoRefresh=False, afterRefresh=[], args=[]):
-        """
-        Args:
-            token (string): Account token
-            autoRefresh (bool, optional): True to automatically refresh the token after it expires. Defaults to False.
-            afterRefresh (list, optional): A function to call after refreshing the token in this format: [module, function]. Defaults to None.
-            args (string, optional): Arguments to pass in afterRefresh function. Defaults to None.
-        """
-
         NcellApp.__init__(self)
         self.token = token
         self.autoRefresh = autoRefresh
@@ -37,7 +29,10 @@ class ncell(NcellApp):
         """Refresh the token
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+        
+        Example:
+            >>> account.refreshToken()
         """
 
         url = self.baseUrl + '/user/refresh/token'
@@ -83,7 +78,7 @@ class ncell(NcellApp):
             data (string): HTTP data
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
         """
 
         #! If token is expired
@@ -108,7 +103,12 @@ class ncell(NcellApp):
         """Get the basic app configuration
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> config = account.config()
+            >>> print(config.content)
         """
 
         url = self.baseUrl + '/utilitymgt/app-basic-config/view'
@@ -122,7 +122,12 @@ class ncell(NcellApp):
         """Get the user's profile
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+        
+            >>> profile = account.profile()
+            >>> print(profile.content)
         """
 
         url = self.baseUrl + '/subscriber/profile/query'
@@ -136,7 +141,12 @@ class ncell(NcellApp):
         """Get the user's balance
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+        
+        Example:
+
+            >>> balance = account.balance()
+            >>> print(balance.content)
         """
 
         url = self.baseUrl + '/accountmgt/balance/query'
@@ -150,7 +160,12 @@ class ncell(NcellApp):
         """Get notifications
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> notifications = account.notifications()
+            >>> print(notifications.content)
         """
 
         url = self.baseUrl + 'notificationmgt/notification/query'
@@ -164,7 +179,12 @@ class ncell(NcellApp):
         """Get recommendations
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> recommendations = account.recommendation()
+            >>> print(recommendations.content)
         """
 
         url = self.baseUrl + '/recommendationmgt/recommendation/details'
@@ -178,7 +198,12 @@ class ncell(NcellApp):
         """Get the subscribed products
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+        
+        Example:
+
+            >>> subscribed = account.subscribedProducts()
+            >>> print(subscribed.content)
         """
 
         url = self.baseUrl + '/billingmgt/vas/subscribedproducts/query'
@@ -197,7 +222,12 @@ class ncell(NcellApp):
             schedule (str, optional): Schedule the SMS. Defaults to 'null'. (Currently Ncell don't support scheduling)
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+        
+        Example:
+
+            >>> sms = account.sendFreeSms('980*******', 'Hello World')
+            >>> print(sms.content)
         """
 
         url = self.baseUrl + '/smsmgt/free/sms/send'
@@ -218,7 +248,12 @@ class ncell(NcellApp):
             schedule (str, optional): Schedule the SMS. Defaults to 'null'. (Currently Ncell don't support scheduling)
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+        
+        Example:
+
+            >>> sms = account.sendSms('980*******', 'Hello World')
+            >>> print(sms.content)
         """
 
         url = self.baseUrl + '/smsmgt/free/sms/send'
@@ -233,7 +268,12 @@ class ncell(NcellApp):
         """Get the recharge history
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+        
+        Example:
+
+            >>> history = account.rechargeHistory()
+            >>> print(history.content)
         """
 
         url = self.baseUrl + '/accountmgt/history/recharge'
@@ -250,7 +290,12 @@ class ncell(NcellApp):
             rPin (string): 16 digit recharge pin
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> recharge = account.selfRecharge('1548754256987456')
+            >>> print(recharge.content)
         """
 
         url = self.baseUrl + '/accountmgt/manual-recharge'
@@ -268,7 +313,12 @@ class ncell(NcellApp):
             rPin (string): 16 digit recharge pin
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> recharge = account.recharge('980*******', '1548754256987456')
+            >>> print(recharge.content)
         """
 
         url = self.baseUrl + '/accountmgt/manual-recharge'
@@ -285,7 +335,12 @@ class ncell(NcellApp):
             amount (string): Amount to recharge
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> onlineRecharge = account.selfOnlineRecharge('1548754256987456', '100')
+            >>> print(onlineRecharge.content)
         """
 
         url = self.baseUrl + '/paymentmgt/url-pin-request'
@@ -295,15 +350,20 @@ class ncell(NcellApp):
 
         return self.__autoRefresh(response, url, data) if self.autoRefresh else NcellResponse(response)
 
-    def onlineRecharge(self, amount, destination):
+    def onlineRecharge(self, destination, amount):
         """Online recharge
 
         Args:
-            amount (string): Amount to recharge
             destination (string): Destination MSISDN to recharge balance
+            amount (string): Amount to recharge
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> recharge = account.onlineRecharge('980*******', '100')
+            >>> print(recharge.content)
         """
 
         url = self.baseUrl + '/paymentmgt/url-pin-request'
@@ -317,7 +377,12 @@ class ncell(NcellApp):
         """Apply for loan
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> loan = account.takeLoan()
+            >>> print(loan.content)
         """
 
         url = self.baseUrl + '/accountmgt/apply-loan'
@@ -331,7 +396,12 @@ class ncell(NcellApp):
         """Get the balance transfer history
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> history = account.balanceTransferHistory()
+            >>> print(history.content)
         """
 
         url = self.baseUrl + '/accountmgt/history/balance-transfer'
@@ -349,7 +419,12 @@ class ncell(NcellApp):
             amount (string): Amount to transfer
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> transfer = account.balanceTransfer('980*******', '100')
+            >>> print(transfer.content)
         """
 
         url = self.baseUrl + '/accountmgt/balance-transfer'
@@ -368,7 +443,12 @@ class ncell(NcellApp):
             otp (string): OTP code
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+        
+        Example:
+
+            >>> confirmation = account.confirmBalanceTransfer('980*******', '100', '123456')
+            >>> print(confirmation.content)
         """
 
         url = self.baseUrl + '/accountmgt/balance-transfer'
@@ -385,7 +465,12 @@ class ncell(NcellApp):
             keyword (string, optional): Keywords to search the plans.
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> plans = account.dataPlans()
+            >>> print(plans.content)
         """
 
         url = self.baseUrl + '/product/data-plans'
@@ -407,7 +492,12 @@ class ncell(NcellApp):
             keyword (string, optional): Keywords to search the plans.
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> plans = account.voiceAndSmsPlans()
+            >>> print(plans.content)
         """
 
         url = self.baseUrl + '/product/voice-plans'
@@ -429,7 +519,12 @@ class ncell(NcellApp):
             keyword (string, optional): Keywords to search the plans.
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> plans = account.vasPlans()
+            >>> print(plans.content)
         """
 
         url = self.baseUrl + '/product/vas-plans'
@@ -450,7 +545,12 @@ class ncell(NcellApp):
             subscriptionCode (string): Subscription code of a product
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> response = account.subscribeProduct('125425')
+            >>> print(response.content)
         """
 
         url = self.baseUrl + '/billingmgt/product/subscribe'
@@ -467,7 +567,12 @@ class ncell(NcellApp):
             subscriptionCode (string): Subscription code of a product
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> response = account.unsubscribeProduct('125425')
+            >>> print(response.content)
         """
 
         url = self.baseUrl + '/billingmgt/product/unsubscribe'
@@ -481,7 +586,12 @@ class ncell(NcellApp):
         """Generate a transaction OTP
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> response = account.generateTransactionOtp()
+            >>> print(response.content)
         """
 
         url = self.baseUrl + '/accountmgt/otp/generate'
@@ -498,7 +608,12 @@ class ncell(NcellApp):
             otp (string): OTP code
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> response = account.validateTransactionOtp('123456')
+            >>> print(response.content)
         """
 
         url = self.baseUrl + '/accountmgt/otp/validate'
@@ -512,16 +627,16 @@ class ncell(NcellApp):
         """Get the transaction history
 
         Args:
-            from (string): Date from when history is to be returned 
-            to (string): Date upto which history is to be returned
-
-        Rules:
-            - The difference between from and to date can only be 7 days
-            - Date should be in the following format: YY-MM-DDT00:00:00 
-                    Eg: 2021-02-06T00:00:00 or 2021-02-12T07:38:09
+            from (string): Date from when history is to be returned in the format YY-MM-DDTHH:MM:SS 
+            to (string): Date upto which history is to be returned in the format YY-MM-DDTHH:MM:SS 
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> history = account.transactionHistory('2021-02-06T00:00:00', '2021-02-12T00:00:00')
+            >>> print(history.content)
         """
 
         url = self.baseUrl + '/accountmgt/transaction/history/detail'
@@ -535,16 +650,16 @@ class ncell(NcellApp):
         """Get the transaction summary
 
         Args:
-            from (string): Date from when summary is to be returned 
-            to (string): Date upto which summary is to be returned
-
-        Rules:
-            - The difference between from and to date can only be 7 days
-            - Date should be in the following format: YY-MM-DDT00:00:00 
-                    Eg: 2021-02-06T00:00:00 or 2021-02-12T07:38:09
+            from (string): Date from when summary is to be returned in the format YY-MM-DDTHH:MM:SS 
+            to (string): Date upto which summary is to be returned in the format YY-MM-DDTHH:MM:SS 
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+        
+            >>> history = account.transactionSummary('2021-02-06T00:00:00', '2021-02-12T00:00:00')
+            >>> print(history.content)
         """
 
         url = self.baseUrl + '/accountmgt/transaction/history/summary'

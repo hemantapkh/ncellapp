@@ -6,18 +6,7 @@ from ncellapp.models import NcellResponse
 from ncellapp.signatures import tsGen, reqIdGen
 
 class register(NcellApp): 
-    """
-    Register class contains the methods for registering an account
-
-    Args:
-        NcellApp ([type]): [description]
-    """
     def __init__(self, msisdn):
-        """
-        Args:
-            msisdn (string): MSISDN to register
-        """
-
         NcellApp.__init__(self)
         self.msisdn = str(msisdn)
     
@@ -25,7 +14,12 @@ class register(NcellApp):
         """Request Ncell to send OTP to the given number for registration
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+        
+        Example:
+        
+            >>> reg.generateOtp()
+            <Response [OTP1000]>
         """
 
         url = self.baseUrl + '/user/otp/generate'
@@ -42,7 +36,14 @@ class register(NcellApp):
             otp (string): OTP code
 
         Returns:
-            [ncellapp.models.NcellResponse]: Response from the Ncell server
+            ncellapp.models.NcellResponse: Response from the Ncell server
+
+        Example:
+
+            >>> reg.validateOtp('123456')
+            <Response [OTP1000]>
+            >>> reg.token
+            'eyJtc2lzZx4iOiI5ODE0MDY2NTE4IiriYWNjZXNzVG9rZW4kOiJle...'
         """
 
         url = self.baseUrl + '/user/otp/validate'
