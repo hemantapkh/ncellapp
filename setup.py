@@ -1,6 +1,6 @@
 import setuptools
 
-with open("PyPiREADME.md", "r") as fh:
+with open("README.md", "r") as fh:
     readme = fh.read()
 
 setuptools.setup(
@@ -14,7 +14,7 @@ setuptools.setup(
     install_requires=["requests", "emoji"],
     url="https://github.com/hemantapkh/ncellapp",
     project_urls={
-        "Documentation": "https://github.com/hemantapkh/ncellapp/blob/main/README.md",
+        "Documentation": "https://ncellapp.readthedocs.io/en/latest/",
         "Issue tracker": "https://github.com/hemantapkh/ncellapp/issues",
       },
     packages=setuptools.find_packages(),
