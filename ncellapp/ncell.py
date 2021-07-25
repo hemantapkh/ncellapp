@@ -156,24 +156,24 @@ class ncell(NcellApp):
         
         return self.__autoRefresh(response, url, data) if self.autoRefresh else NcellResponse(response)
 
-    def notifications(self):
-        """Get notifications
+    # def notifications(self):
+    #     """Get notifications
 
-        Returns:
-            ncellapp.models.NcellResponse: Response from the Ncell server
+    #     Returns:
+    #         ncellapp.models.NcellResponse: Response from the Ncell server
 
-        Example:
+    #     Example:
 
-            >>> notifications = account.notifications()
-            >>> print(notifications.content)
-        """
+    #         >>> notifications = account.notifications()
+    #         >>> print(notifications.content)
+    #     """
 
-        url = self.baseUrl + 'notificationmgt/notification/query'
-        data = f'{{"notificationQueryRequest":{{"msisdn":["{self.msisdn}"]}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"NOTIFICATIONS","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+    #     url = self.baseUrl + 'notificationmgt/notification/query'
+    #     data = f'{{"notificationQueryRequest":{{"msisdn":["{self.msisdn}"]}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"NOTIFICATIONS","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
-        response = requests.post(url, headers=self.headers, data=data)
+    #     response = requests.post(url, headers=self.headers, data=data)
 
-        return self.__autoRefresh(response, url, data) if self.autoRefresh else NcellResponse(response)
+    #     return self.__autoRefresh(response, url, data) if self.autoRefresh else NcellResponse(response)
 
     def recommendation(self):
         """Get recommendations
