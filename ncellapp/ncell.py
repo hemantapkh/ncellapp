@@ -20,6 +20,7 @@ class ncell(NcellApp):
         self.msisdn = literal_eval(b64decode(self.token.encode()).decode())['msisdn']
         self.__accessToken = literal_eval(b64decode(self.token.encode()).decode())['accessToken']
         self.__rToken = literal_eval(b64decode(self.token.encode()).decode())['refreshToken']
+        self.__deviceId = literal_eval(b64decode(self.token.encode()).decode())['deviceId']
 
         self.headers.update({
             'authorization': f'Bearer {self.__accessToken}',
@@ -36,7 +37,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/user/refresh/token'
-        data = f'{{"refreshTokenRequest":{{"refreshToken":"{self.__rToken}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"LOGOUT_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"refreshTokenRequest":{{"refreshToken":"{self.__rToken}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"LOGOUT_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -44,7 +45,7 @@ class ncell(NcellApp):
         if response.json()['responseHeader']['responseCode'] == '200':
             self.__accessToken = response.json()['userAuthResponse']['accessToken']
             self.__rToken = response.json()['userAuthResponse']['refreshToken']
-            self.token = b64encode(f'{{"msisdn":"{self.msisdn}","accessToken":"{self.accessToken}","refreshToken":"{self.__rToken}"}}'.encode()).decode()
+            self.token = b64encode(f'{{"msisdn":"{self.msisdn}","deviceId":"{self.__deviceId}","accessToken":"{self.__accessToken}","refreshToken":"{self.__rToken}"}}'.encode()).decode()
 
             self.headers.update({
                 'authorization': f'Bearer {response.json()["userAuthResponse"]["accessToken"]}',
@@ -112,7 +113,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/utilitymgt/app-basic-config/view'
-        data = f'{{"basicAppInfo":{{"langCode":"en","osType":"{self.deviceType.upper()}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"BASIC_CONFIG_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"basicAppInfo":{{"langCode":"en","osType":"{self.deviceType.upper()}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"BASIC_CONFIG_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -131,7 +132,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/subscriber/profile/query'
-        data = f'{{"querySubscriberProfileRequest":{{"msisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"PROFILE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"querySubscriberProfileRequest":{{"msisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"PROFILE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -150,7 +151,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/balance/query'
-        data = f'{{"queryBalanceRequest":{{"deviceId":"{self.deviceId}","msisdn":"{self.msisdn}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"MY_SERVICES","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"queryBalanceRequest":{{"deviceId":"{self.__deviceId}","msisdn":"{self.msisdn}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"MY_SERVICES","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
         
@@ -169,7 +170,7 @@ class ncell(NcellApp):
     #     """
 
     #     url = self.baseUrl + 'notificationmgt/notification/query'
-    #     data = f'{{"notificationQueryRequest":{{"msisdn":["{self.msisdn}"]}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"NOTIFICATIONS","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+    #     data = f'{{"notificationQueryRequest":{{"msisdn":["{self.msisdn}"]}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"NOTIFICATIONS","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
     #     response = requests.post(url, headers=self.headers, data=data)
 
@@ -188,7 +189,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/recommendationmgt/recommendation/details'
-        data = f'{{"recommendationDetailRequest":{{"deviceId":"{self.deviceId}","msisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRAY_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"recommendationDetailRequest":{{"deviceId":"{self.__deviceId}","msisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"TRAY_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -207,7 +208,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/billingmgt/vas/subscribedproducts/query'
-        data = f'{{"queryAllProductsRequest":{{"deviceId":"{self.deviceId}","msisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"MY_SERVICES","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"queryAllProductsRequest":{{"deviceId":"{self.__deviceId}","msisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"MY_SERVICES","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -233,7 +234,7 @@ class ncell(NcellApp):
         url = self.baseUrl + '/smsmgt/free/sms/send'
         text = demojize(text).replace('\n','')
 
-        data = f'{{"sendSMSFreeRequest":{{"source":"{self.msisdn}","destination":"{destination}","content":"{text}","schedule":{schedule},"isConfirm":0}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"MY_SERVICES","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"sendSMSFreeRequest":{{"source":"{self.msisdn}","destination":"{destination}","content":"{text}","schedule":{schedule},"isConfirm":0}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"MY_SERVICES","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -258,7 +259,7 @@ class ncell(NcellApp):
 
         url = self.baseUrl + '/smsmgt/free/sms/send'
         text = demojize(text).replace('\n','')
-        data = f'{{"sendSMSFreeRequest":{{"source":"{self.msisdn}","destination":"{destination}","content":"{text}","schedule":{schedule},"isConfirm":1}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"MY_SERVICES","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"sendSMSFreeRequest":{{"source":"{self.msisdn}","destination":"{destination}","content":"{text}","schedule":{schedule},"isConfirm":1}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"MY_SERVICES","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -277,7 +278,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/history/recharge'
-        data = f'{{"queryRechargeLogRequest":{{"msisdn":"{self.msisdn}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"RECHARGE_LOG_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"queryRechargeLogRequest":{{"msisdn":"{self.msisdn}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"RECHARGE_LOG_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -299,7 +300,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/manual-recharge'
-        data = f'{{"manualRechargeInfo":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","cardPinNumber":"{rPin}","rechargeMode":"PIN"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"RECHARGE_SELF","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"manualRechargeInfo":{{"msisdn":"{self.msisdn}","deviceId":"{self.__deviceId}","cardPinNumber":"{rPin}","rechargeMode":"PIN"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"RECHARGE_SELF","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -322,7 +323,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/manual-recharge'
-        data = f'{{"manualRechargeInfo":{{"msisdn":"{destination}","deviceId":"{self.deviceId}","cardPinNumber":"{rPin}","rechargeMode":"PIN"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"RECHARGE_OTHER","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"manualRechargeInfo":{{"msisdn":"{destination}","deviceId":"{self.__deviceId}","cardPinNumber":"{rPin}","rechargeMode":"PIN"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"RECHARGE_OTHER","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -344,7 +345,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/paymentmgt/url-pin-request'
-        data = f'{{"paymentInfo":{{"transactionId":"{tranIdGen()}","msisdn":"{self.msisdn}","description":"Recharge Action","amount":"{amount}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"ONLINE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"paymentInfo":{{"transactionId":"{tranIdGen()}","msisdn":"{self.msisdn}","description":"Recharge Action","amount":"{amount}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"ONLINE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -367,7 +368,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/paymentmgt/url-pin-request'
-        data = f'{{"paymentInfo":{{"transactionId":"{tranIdGen()}","msisdn":"{destination}","description":"Recharge Action","amount":"{amount}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"ONLINE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"paymentInfo":{{"transactionId":"{tranIdGen()}","msisdn":"{destination}","description":"Recharge Action","amount":"{amount}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"ONLINE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -386,7 +387,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/apply-loan'
-        data = f'{{"creditLoanInfo":{{"msisdn":"{self.msisdn}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"LOAN_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}' 
+        data = f'{{"creditLoanInfo":{{"msisdn":"{self.msisdn}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"LOAN_ACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}' 
         
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -405,7 +406,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/history/balance-transfer'
-        data = f'{{"balanceTransferHistoryRequest":{{"msisdn":"{self.msisdn}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"BALANCE_TRANSFER","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"balanceTransferHistoryRequest":{{"msisdn":"{self.msisdn}"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"BALANCE_TRANSFER","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -428,7 +429,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/balance-transfer'
-        data = f'{{"balanceTransferInfo":{{"sender":"{self.msisdn}","receiver":"{destination}","amount":"{amount}","deviceId":"{self.deviceId}","otpDetails":{{"otpState":"GENERATE","otp":""}}}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"BALANCE_TRANSFER","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"balanceTransferInfo":{{"sender":"{self.msisdn}","receiver":"{destination}","amount":"{amount}","deviceId":"{self.__deviceId}","otpDetails":{{"otpState":"GENERATE","otp":""}}}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"BALANCE_TRANSFER","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -452,7 +453,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/balance-transfer'
-        data = f'{{"balanceTransferInfo":{{"sender":"{self.msisdn}","receiver":"{destination}","amount":"{amount}","deviceId":"{self.deviceId}","otpDetails":{{"otpState":"VALIDATE","otp":"{otp}"}}}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"BALANCE_TRANSFER","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"balanceTransferInfo":{{"sender":"{self.msisdn}","receiver":"{destination}","amount":"{amount}","deviceId":"{self.__deviceId}","otpDetails":{{"otpState":"VALIDATE","otp":"{otp}"}}}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"BALANCE_TRANSFER","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
         response = requests.post(url, headers=self.headers, data=data)
 
         return self.__autoRefresh(response, url, data) if self.autoRefresh else NcellResponse(response)
@@ -476,9 +477,9 @@ class ncell(NcellApp):
         url = self.baseUrl + '/product/data-plans'
         
         if categoryId:
-            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"categoryId":{categoryId},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"categoryId":{categoryId},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
         else:
-            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
         
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -503,9 +504,9 @@ class ncell(NcellApp):
         url = self.baseUrl + '/product/voice-plans'
         
         if categoryId:
-            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"categoryId":{categoryId},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"categoryId":{categoryId},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
         else:
-            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
         
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -530,9 +531,9 @@ class ncell(NcellApp):
         url = self.baseUrl + '/product/vas-plans'
         
         if categoryId:
-            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"categoryId":{categoryId},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"categoryId":{categoryId},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
         else:
-            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+            data = f'{{"languageCode":"{self.languageCode}","keyword":"{keyword}","pageableDto":{{"pageNumber":1,"pageSize":50}},"sortby":null,"msisdn":"{self.msisdn}","requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"SHOP","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
         
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -554,7 +555,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/billingmgt/product/subscribe'
-        data = f'{{"productSubscriptionSummaryRequest":{{"deviceId":"{self.deviceId}","msisdn":"{self.msisdn}","subscriptionCode":"{subscriptionCode}","productName":"N/A","productPrice":"N/A","ncellProductName":"N/A","medium":"APP","linkId":"00000000000000000"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SUBSCRIBE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"productSubscriptionSummaryRequest":{{"deviceId":"{self.__deviceId}","msisdn":"{self.msisdn}","subscriptionCode":"{subscriptionCode}","productName":"N/A","productPrice":"N/A","ncellProductName":"N/A","medium":"APP","linkId":"00000000000000000"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"SUBSCRIBE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -576,7 +577,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/billingmgt/product/unsubscribe'
-        data = f'{{"productSubscriptionSummaryRequest":{{"deviceId":"{self.deviceId}","msisdn":"{self.msisdn}","subscriptionCode":"{subscriptionCode}","productName":"N/A","languageCode":"{self.languageCode}","medium":"APP","linkId":"00000000000000000"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"SUBSCRIBE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"productSubscriptionSummaryRequest":{{"deviceId":"{self.__deviceId}","msisdn":"{self.msisdn}","subscriptionCode":"{subscriptionCode}","productName":"N/A","languageCode":"{self.languageCode}","medium":"APP","linkId":"00000000000000000"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"SUBSCRIBE","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -595,7 +596,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/otp/generate'
-        data = f'{{"generateOTPRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"generateOTPRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.__deviceId}","subId":"1044209462","action":"TRAN","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -617,7 +618,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/otp/validate'
-        data = f'{{"validateOTPRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","otp":"{otp}","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"validateOTPRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.__deviceId}","subId":"1044209462","action":"TRAN","otp":"{otp}","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -640,7 +641,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/transaction/history/detail'
-        data = f'{{"transactionDetailRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","dateRange":{{"from":"{fromDate}.000Z","to":"{toDate}.000Z"}},"pagination":{{"range":100,"start":1,"pageOffSet":1,"totalRecords":0,"originalTotalRecords":0}},"transactionType":"USAGE","timeZone":"America/New_York"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"transactionDetailRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.__deviceId}","subId":"1044209462","action":"TRAN","dateRange":{{"from":"{fromDate}.000Z","to":"{toDate}.000Z"}},"pagination":{{"range":100,"start":1,"pageOffSet":1,"totalRecords":0,"originalTotalRecords":0}},"transactionType":"USAGE","timeZone":"America/New_York"}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 
@@ -663,7 +664,7 @@ class ncell(NcellApp):
         """
 
         url = self.baseUrl + '/accountmgt/transaction/history/summary'
-        data = f'{{"transactionSummaryRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.deviceId}","subId":"1044209462","action":"TRAN","dateRange":{{"from":"{fromDate}.000Z","to":"{toDate}.000Z"}},"transactionType":"USAGE","timeZone":"America/New_York","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
+        data = f'{{"transactionSummaryRequest":{{"msisdn":"{self.msisdn}","deviceId":"{self.__deviceId}","subId":"1044209462","action":"TRAN","dateRange":{{"from":"{fromDate}.000Z","to":"{toDate}.000Z"}},"transactionType":"USAGE","timeZone":"America/New_York","null":null}},"requestHeader":{{"requestId":"{reqIdGen()}","timestamp":"{tsGen()}","channel":"sca","deviceType":"{self.deviceType}","deviceId":"{self.__deviceId}","clientip":"N/A","action":"TRANSACTION","connectionType":"{self.connectionType}","msisdn":"{self.msisdn}","deviceModel":"{self.deviceModel}","location":"N/A","primaryMsisdn":"{self.msisdn}","languageCode":"{self.languageCode}"}}}}'
 
         response = requests.post(url, headers=self.headers, data=data)
 

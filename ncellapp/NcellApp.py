@@ -14,5 +14,4 @@ class NcellApp():
         self.languageCode = '1'
         self.deviceType = 'android'
         self.deviceModel = 'Samsung Galaxy S7'
-        self.deviceId = macGen()
         self.token = None
