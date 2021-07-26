@@ -9,6 +9,41 @@ from ncellapp.models import NcellResponse
 from ncellapp.signatures import tsGen, reqIdGen, tranIdGen
 
 class ncell(NcellApp):
+    """This class contains the methods for using the features of ncell app.
+
+    Args:
+        token (string): [description]
+        autoRefresh (bool, optional): True to automatically refresh the token after it expires, default is False.
+        afterRefresh (list, optional): List with two elements, first element is the module name and second element is the function name.
+        args (list, optional): List of the arguments to the afterRefresh function. __token__ is a special parameter which contains the refreshed token.
+    
+    Attributes:
+        baseUrl (string): The base URL of the Ncell API
+        headers (string): The headers of the Ncell API
+        connectionType (string): Type of the connection. Defaults to 'WIFI'
+        languageCode (string): Language code of the API. Defaults to 'en'
+        deviceType (string): Type of the device. Defaults to 'ANDROID'
+        deviceModel(string): Device model of the device. Defaults to 'Samsung Galaxy S7'
+        token (string): Token of the account
+
+    Example:
+        >>> from ncellapp import ncell
+        
+        # Normal object of ncell class where the token expires after certain time.
+        # You should refresh the token manually after it expires and save the new token for later use.
+        >>> account = ncell(token='TOKEN')
+
+        # In this type of object, the token is refreshed automatically after it expires.
+        >>> account = ncell(token='TOKEN', autoRefresh=True)
+
+        # In this type of object, the token is refreshed automatically after it expires and the afterRefresh function is called.
+        def showNewToken(token, name):
+            print(f'Hello {name}, the previous token is expired and the current token is {token}.')
+        
+        #-> __name__ can be passed if the afterRefresh function is on the current module
+        #-> __token__ is a special parameter which contains the refreshed token.
+        >>> account = ncell(token='TOKEN', autoRefresh=True, afterRefresh=[__name__, 'showNewToken'], args=['__token__', 'sir'])
+    """
     #: Ncell class contains the methods for using the features of ncell app  
     def __init__(self, token, autoRefresh=False, afterRefresh=[], args=[]):
         NcellApp.__init__(self)
@@ -34,6 +69,7 @@ class ncell(NcellApp):
         
         Example:
             >>> account.refreshToken()
+            >>> print(f'The new token is {account.token}.')
         """
 
         url = self.baseUrl + '/user/refresh/token'

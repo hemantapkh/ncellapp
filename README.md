@@ -89,11 +89,10 @@ This is the unofficial python API wrapper of Ncell App.
 ...     with open('token','w') as f_in:
 ...     f_in.write(token)
 
-# Creating an object of ncell which contains 'afterRefresh' and 'args' arguments. See the documentation for more information.
+# Creating an object of ncell which contains 'afterRefresh' and 'args' arguments.
+# See the documentation for more information.
 >>> ac = ncellapp.ncell(token=token, afterRefresh=[__name__, 'storeToken'], args=['__token__'])
-.
-.
-.
+
 # Token expired
 >>> ac.balance()
 <Response [LGN2001]>
@@ -115,12 +114,11 @@ This is the unofficial python API wrapper of Ncell App.
     with open('token','w') as f_in:
         f_in.write(token)
 
-# Creating an object of ncell and setting autoRefresh=True. See documentation for more information.
+# Creating an object of ncell and setting autoRefresh=True. 
+# See documentation for more information.
 >>> ac = ncellapp.ncell(token=token, autoRefresh=True, afterRefresh=[__name__, 'storeToken'], args=['__token__'])
-.
-.
-.
-# Token will be refreshed and stored automatically if expires
+
+# Token will be refreshed and stored automatically if it expires
 >>> ac.balace()
 <Response [BAL1000]>
 ```

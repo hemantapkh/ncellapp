@@ -5,7 +5,26 @@ from ncellapp.NcellApp import NcellApp
 from ncellapp.models import NcellResponse
 from ncellapp.signatures import tsGen, reqIdGen, macGen
 
-class register(NcellApp): 
+class register(NcellApp):
+    """This class contains the methods for registering an account.
+
+    Args:
+        msisdn (string): MSISDN of the user
+    
+    Attributes:
+        baseUrl (string): The base URL of the Ncell API
+        headers (string): The headers of the Ncell API
+        connectionType (string): Type of the connection. Defaults to 'WIFI'
+        languageCode (string): Language code of the API. Defaults to 'en'
+        deviceType (string): Type of the device. Defaults to 'ANDROID'
+        deviceModel(string): Device model of the device. Defaults to 'Samsung Galaxy S7'
+        token (string): Token of the account
+
+    Example:
+        >>> from ncellapp import register
+
+        >>> reg = register(msisdn='PHONE NUMBER TO REGISTER')
+    """
     def __init__(self, msisdn):
         NcellApp.__init__(self)
         self.msisdn = str(msisdn)
