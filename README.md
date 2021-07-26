@@ -1,7 +1,7 @@
 
 <h2 align='center'>📞Unofficial Python API Wrapper of Ncell</h2>
 <p align="center">
-<img src="images/ncellpy.jpg" align="center" height=200 alt="NcellPy" />
+<img src="https://raw.githubusercontent.com/hemantapkh/ncellapp/main/images/ncellpy.jpg" align="center" height=200 alt="NcellPy" />
 </p>
 <p align="center">
 <a href="https://pypi.org/ncellapp">
@@ -13,7 +13,7 @@
 <a href="https://pypi.org/ncellapp">
 <img src='https://img.shields.io/pypi/pyversions/ncellapp.svg'>
 </a>
-<a href="https://pypi.org/ncellapp">
+<a href="https://pypi.org/project/ncellapp/">
 <img src='https://pepy.tech/badge/ncellapp'>
 </a>
 <img src='https://visitor-badge.laobi.icu/badge?page_id=hemantapkh.ncellapp'>
