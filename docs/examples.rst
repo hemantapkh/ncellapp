@@ -48,7 +48,7 @@ Manually refreshing the token and storing the refreshed token (Not recommended)
         # This function will be executed after refreshing the token
         >>>def storeToken(token):
         ...     with open('token','w') as f_in:
-        ...     f_in.write(token)
+        ...             f_in.write(token)
 
         # Creating an object of ncell which contains 'afterRefresh' and 'args' arguments.
         # See the documentation for more information.

@@ -63,7 +63,7 @@ class register(NcellApp):
             >>> reg.validateOtp('123456')
             <Response [OTP1000]>
             >>> reg.token
-            'eyJtc2lzZx4iOiI5ODE0MDY2NTE4IiriYWNjZXNzVG9rZW4kOiJle...'
+            'eyJt...'
         """
 
         url = self.baseUrl + '/user/otp/validate'
