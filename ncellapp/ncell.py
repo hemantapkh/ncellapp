@@ -122,7 +122,7 @@ class ncell(NcellApp):
             refreshResponse = self.refreshToken()
 
             #! If token refreshed successfully, request with new token and return the response
-        if refreshResponse.responseHeader['responseCode'] == 200:
+            if refreshResponse.responseHeader['responseCode'] == 200:
                 response = requests.post(url, headers=self.headers, data=data)
                 
                 return NcellResponse(response)
