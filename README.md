@@ -44,9 +44,9 @@ This is the unofficial python API wrapper of Ncell App.
     ```
 **Note:** You may need to change the `pip` to `pip3` or `python` to `python3` on the above command depending on your system.
 
-## Start guide
+## Start guide --
 
-### Quick Examples
+### Quick Examples--
 
 #### 1. Getting a Token
 
