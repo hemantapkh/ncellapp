@@ -2,7 +2,7 @@ from ncellapp.signatures import macGen
 
 class NcellApp():
     def __init__(self):
-        self.baseUrl = 'https://sca.ncell.axiata.com/adl/et/telco/selfcare/ncell/api/v1.0'
+        self.baseUrl = 'https://sca.ncell.com.np/adl/et/telco/selfcare/ncell/api/v1.0'
         self.headers = {
             'accept': 'application/json',
             'Content-Type': 'application/json',
